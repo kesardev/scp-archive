@@ -23,7 +23,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import cc.kesardev.scparchive.catalog.CatalogActivity
 import cc.kesardev.scparchive.catalog.SearchActivity
 import cc.kesardev.scparchive.library.LibraryActivity
 import cc.kesardev.scparchive.library.LibraryDatabase
@@ -34,7 +33,6 @@ import cc.kesardev.scparchive.reader.ReaderTheme
 import cc.kesardev.scparchive.reader.ReaderWebViewClient
 import cc.kesardev.scparchive.reader.InteractiveActivity
 import cc.kesardev.scparchive.settings.AppearancePreferences
-import cc.kesardev.scparchive.settings.SettingsActivity
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +54,7 @@ class MainActivity : BaseActivity() {
     private lateinit var progress: ProgressBar
 
     private var currentSlug: String = "scp-173"
+    private var pendingAnchor: String? = null
     private var currentTitle: String = "SCP-173"
     private var isFavorite: Boolean = false
     private var lastHistoryWrite: Long = 0L
@@ -82,6 +81,7 @@ class MainActivity : BaseActivity() {
 
         configureWebView()
         currentSlug = intent.getStringExtra("slug") ?: "scp-173"
+        pendingAnchor = intent.getStringExtra("anchor")
         currentTitle = currentSlug.uppercase()
         viewModel.state.observe(this) { state -> render(state) }
         viewModel.load(currentSlug, currentTheme)
@@ -144,12 +144,19 @@ class MainActivity : BaseActivity() {
             pageFinished = { view, url ->
                 if (url != "about:blank") {
                     applySettings(preferences.load())
-                    val ratio = preferences.position(currentSlug)
-                    if (ratio > 0f) {
-                        view.evaluateJavascript("window.__readerRestorePosition(" + ratio + ")", null)
+                    val anchor = pendingAnchor
+                    if (anchor != null) {
+                        pendingAnchor = null
+                        view.evaluateJavascript(anchorScript(anchor), null)
+                    } else {
+                        val ratio = preferences.position(currentSlug)
+                        if (ratio > 0f) {
+                            view.evaluateJavascript("window.__readerRestorePosition(" + ratio + ")", null)
+                        }
                     }
                 }
-            }
+            },
+            context = this
         )
     }
 
@@ -169,11 +176,6 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_catalog -> {
-                startActivity(Intent(this, CatalogActivity::class.java))
-                true
-            }
-
             R.id.action_search -> {
                 startActivity(Intent(this, SearchActivity::class.java))
                 true
@@ -189,26 +191,6 @@ class MainActivity : BaseActivity() {
                 true
             }
 
-            R.id.page_173 -> {
-                openPage("scp-173")
-                true
-            }
-
-            R.id.page_5000 -> {
-                openPage("scp-5000")
-                true
-            }
-
-            R.id.page_cn1000 -> {
-                openPage("scp-cn-1000")
-                true
-            }
-
-            R.id.page_3029 -> {
-                openPage("scp-3029")
-                true
-            }
-
             R.id.action_toc -> {
                 showTocDialog()
                 true
@@ -221,11 +203,6 @@ class MainActivity : BaseActivity() {
 
             R.id.action_find -> {
                 showFindDialog()
-                true
-            }
-
-            R.id.action_appearance -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
 
@@ -246,10 +223,13 @@ class MainActivity : BaseActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        intent.getStringExtra("slug")?.let { slug -> openPage(slug) }
+        intent.getStringExtra("slug")?.let { slug ->
+            openPage(slug, intent.getStringExtra("anchor"))
+        }
     }
 
-    private fun openPage(slug: String) {
+    private fun openPage(slug: String, anchor: String? = null) {
+        pendingAnchor = anchor
         currentSlug = slug
         currentTitle = slug.uppercase()
         isFavorite = false
@@ -308,6 +288,12 @@ class MainActivity : BaseActivity() {
                 Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun anchorScript(anchor: String): String {
+        return "(function(){var a=" + JSONObject.quote(anchor) +
+            ";var e=document.getElementById(a)||document.getElementsByName(a)[0];" +
+            "if(e){e.scrollIntoView(true);}})()"
     }
 
     private fun recordHistory(progress: Float) {

@@ -3,16 +3,15 @@ package cc.kesardev.scparchive.home
 import android.content.Context
 import cc.kesardev.scparchive.catalog.CatalogDatabase
 import cc.kesardev.scparchive.catalog.SeriesParser
+import cc.kesardev.scparchive.data.NetworkClient
 import cc.kesardev.scparchive.data.RequestRateLimiter
 import cc.kesardev.scparchive.library.LibraryDatabase
 import cc.kesardev.scparchive.library.LibraryEntry
 import cc.kesardev.scparchive.reader.ReaderShellBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 data class RemoteSnapshot(
     val topRated: List<HomeArticle>,
@@ -28,14 +27,12 @@ private data class FeedResult(
 
 class HomeRepository(private val context: Context) {
 
+    private val client get() = NetworkClient.get(context)
+
     private val library = LibraryDatabase(context)
     private val catalog = CatalogDatabase(context)
     private val cache = HomeCache(context)
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(25, TimeUnit.SECONDS)
-        .build()
 
     suspend fun localSnapshot(): HomeUiState = withContext(Dispatchers.IO) {
         val catalogCount = ensureCatalog()
@@ -50,11 +47,11 @@ class HomeRepository(private val context: Context) {
                 subtitle = "今日推荐",
                 tagline = pick.tagline
             ),
+            recommended = recommended(pick),
             continueReading = history
-                .filter { it.progress < 0.98f }
+                .filter { it.progress < 0.98f && !it.slug.contains("/html/", ignoreCase = true) }
                 .take(6)
                 .map { toArticle(it, withProgress = true) },
-            favorites = favorites.take(6).map { toArticle(it, withProgress = false) },
             catalogCount = catalogCount,
             favoriteCount = favorites.size,
             historyCount = history.size,
@@ -88,6 +85,20 @@ class HomeRepository(private val context: Context) {
         }
         val pick = DailyPicks.all.random()
         HomeArticle(pick.slug, pick.name, subtitle = "随机条目", tagline = pick.tagline)
+    }
+
+    private fun recommended(daily: DailyPick): List<HomeArticle> {
+        val all = DailyPicks.all
+        val start = all.indexOfFirst { it.slug == daily.slug }.coerceAtLeast(0)
+        return (1..minOf(6, all.size - 1)).map { offset ->
+            val pick = all[(start + offset) % all.size]
+            HomeArticle(
+                slug = pick.slug,
+                title = pick.name,
+                subtitle = "编辑精选",
+                tagline = pick.tagline
+            )
+        }
     }
 
     private fun ensureCatalog(): Int {
@@ -134,7 +145,7 @@ class HomeRepository(private val context: Context) {
         RequestRateLimiter.await()
         val request = Request.Builder()
             .url(ReaderShellBuilder.BASE_URL + path)
-            .header("User-Agent", "SCPArchive/2.2 (Android reader)")
+            .header("User-Agent", "SCPArchive/2.4 (Android reader)")
             .header("Accept", "text/html,application/xhtml+xml,application/xml,text/xml")
             .header("Accept-Language", "zh-CN,zh;q=0.9")
             .build()

@@ -17,21 +17,10 @@
         android:id="@+id/library_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="fixed"
-        xmlns:app="http://schemas.android.com/apk/res-auto" />
+        app:tabMode="fixed" />
 
-    <TextView
-        android:id="@+id/library_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:textSize="12sp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/library_list"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/library_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -43,5 +32,4 @@
         android:background="?attr/colorSurface"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_bottom" />
-
 </LinearLayout>

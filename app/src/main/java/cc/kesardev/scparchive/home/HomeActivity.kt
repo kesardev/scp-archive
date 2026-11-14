@@ -1,15 +1,10 @@
 package cc.kesardev.scparchive.home
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -20,12 +15,8 @@ import androidx.core.view.WindowInsetsCompat
 import cc.kesardev.scparchive.BaseActivity
 import cc.kesardev.scparchive.MainActivity
 import cc.kesardev.scparchive.R
-import cc.kesardev.scparchive.catalog.CatalogActivity
-import cc.kesardev.scparchive.catalog.SearchActivity
-import cc.kesardev.scparchive.catalog.SeriesCatalog
 import cc.kesardev.scparchive.ui.BottomTabs
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.chip.Chip
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -41,18 +32,20 @@ class HomeActivity : BaseActivity() {
     private lateinit var heroTagline: TextView
     private lateinit var heroMeta: TextView
     private lateinit var heroShuffle: TextView
+    private lateinit var sectionRecommended: View
+    private lateinit var recommendedRow: LinearLayout
+    private lateinit var randomCard: View
+    private lateinit var randomTitle: TextView
+    private lateinit var randomMeta: TextView
+    private lateinit var randomShuffle: TextView
     private lateinit var sectionContinue: View
     private lateinit var continueRow: LinearLayout
-    private lateinit var sectionFavorites: View
-    private lateinit var favoritesRow: LinearLayout
-    private lateinit var quickRow: LinearLayout
     private lateinit var sectionTopRated: View
     private lateinit var topRatedRow: LinearLayout
     private lateinit var topRatedSource: TextView
     private lateinit var sectionRecent: View
     private lateinit var recentList: LinearLayout
     private lateinit var recentSource: TextView
-    private lateinit var seriesRow: LinearLayout
     private lateinit var statCatalog: TextView
     private lateinit var statFavorites: TextView
     private lateinit var statHistory: TextView
@@ -73,18 +66,20 @@ class HomeActivity : BaseActivity() {
         heroTagline = findViewById(R.id.hero_tagline)
         heroMeta = findViewById(R.id.hero_meta)
         heroShuffle = findViewById(R.id.hero_shuffle)
+        sectionRecommended = findViewById(R.id.section_recommended)
+        recommendedRow = findViewById(R.id.recommended_row)
+        randomCard = findViewById(R.id.random_card)
+        randomTitle = findViewById(R.id.random_title)
+        randomMeta = findViewById(R.id.random_meta)
+        randomShuffle = findViewById(R.id.random_shuffle)
         sectionContinue = findViewById(R.id.section_continue)
         continueRow = findViewById(R.id.continue_row)
-        sectionFavorites = findViewById(R.id.section_favorites)
-        favoritesRow = findViewById(R.id.favorites_row)
-        quickRow = findViewById(R.id.quick_row)
         sectionTopRated = findViewById(R.id.section_top_rated)
         topRatedRow = findViewById(R.id.top_rated_row)
         topRatedSource = findViewById(R.id.top_rated_source)
         sectionRecent = findViewById(R.id.section_recent)
         recentList = findViewById(R.id.recent_list)
         recentSource = findViewById(R.id.recent_source)
-        seriesRow = findViewById(R.id.series_row)
         statCatalog = findViewById(R.id.stat_catalog)
         statFavorites = findViewById(R.id.stat_favorites)
         statHistory = findViewById(R.id.stat_history)
@@ -94,12 +89,15 @@ class HomeActivity : BaseActivity() {
 
         heroCard.setOnClickListener { state.daily?.let { openArticle(it.slug) } }
         heroShuffle.setOnClickListener { shuffleDaily() }
-        findViewById<View>(R.id.home_catalog_button).setOnClickListener {
-            startActivity(Intent(this, CatalogActivity::class.java))
+        randomCard.setOnClickListener { state.random?.let { openArticle(it.slug) } }
+        randomShuffle.setOnClickListener {
+            viewModel.random { article ->
+                if (article == null) {
+                    Toast.makeText(this, "索引为空，先去系列页同步目录", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
-        setupQuickActions()
-        setupSeriesChips()
         BottomTabs.bind(this, R.id.tab_home)
 
         viewModel.state.observe(this) { value ->
@@ -137,11 +135,6 @@ class HomeActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_search -> {
-                startActivity(Intent(this, SearchActivity::class.java))
-                true
-            }
-
             R.id.action_refresh -> {
                 viewModel.load(force = true)
                 true
@@ -154,17 +147,26 @@ class HomeActivity : BaseActivity() {
     private fun render(value: HomeUiState) {
         loading.visibility = if (value.loading || value.remoteLoading) View.VISIBLE else View.GONE
         renderHero(value.daily)
+        renderRandom(value.random)
 
-        sectionContinue.visibility = if (value.continueReading.isEmpty()) View.GONE else View.VISIBLE
+        sectionRecommended.visibility =
+            if (value.recommended.isEmpty()) View.GONE else View.VISIBLE
+        recommendedRow.removeAllViews()
+        for (article in value.recommended) {
+            addArticleCard(
+                recommendedRow,
+                article,
+                "推荐",
+                showProgress = false,
+                forcedMeta = article.subtitle
+            )
+        }
+
+        sectionContinue.visibility =
+            if (value.continueReading.isEmpty()) View.GONE else View.VISIBLE
         continueRow.removeAllViews()
         for (article in value.continueReading) {
             addArticleCard(continueRow, article, "继续阅读", showProgress = true)
-        }
-
-        sectionFavorites.visibility = if (value.favorites.isEmpty()) View.GONE else View.VISIBLE
-        favoritesRow.removeAllViews()
-        for (article in value.favorites) {
-            addArticleCard(favoritesRow, article, "收藏", showProgress = false)
         }
 
         sectionTopRated.visibility = if (value.topRated.isEmpty()) View.GONE else View.VISIBLE
@@ -205,10 +207,26 @@ class HomeActivity : BaseActivity() {
         heroMeta.text = "每日轮换 · 离线可用"
     }
 
+    private fun renderRandom(article: HomeArticle?) {
+        if (article == null) {
+            randomTitle.text = "交给随机数"
+            randomMeta.text = "从索引里抽一篇没读过的档案"
+        } else {
+            randomTitle.text = article.title
+            randomMeta.text = if (article.subtitle.isNotBlank()) {
+                article.subtitle
+            } else {
+                "点开看看，或再换一篇"
+            }
+        }
+    }
+
     private fun shuffleDaily() {
         val current = state.daily?.slug
         val index = DailyPicks.all.indexOfFirst { it.slug == current }.coerceAtLeast(0)
-        val next = DailyPicks.all[((index + 1) % DailyPicks.all.size + DailyPicks.all.size) % DailyPicks.all.size]
+        val next = DailyPicks.all[
+            ((index + 1) % DailyPicks.all.size + DailyPicks.all.size) % DailyPicks.all.size
+        ]
         val article = HomeArticle(next.slug, next.name, "今日推荐", next.tagline)
         state = state.copy(daily = article)
         renderHero(article)
@@ -260,107 +278,10 @@ class HomeActivity : BaseActivity() {
         recentList.addView(row)
     }
 
-    private fun setupQuickActions() {
-        quickRow.removeAllViews()
-        val actions = listOf(
-            Triple(R.drawable.ic_shuffle, "随机") { openRandom() },
-            Triple(R.drawable.ic_hash, "编号") { showJumpDialog() },
-            Triple(R.drawable.ic_search, "搜索") {
-                startActivity(Intent(this, SearchActivity::class.java))
-            },
-            Triple(R.drawable.ic_sync, "同步") {
-                startActivity(
-                    Intent(this, CatalogActivity::class.java)
-                        .putExtra("sync", true)
-                )
-            }
-        )
-        actions.forEachIndexed { index, (icon, label, action) ->
-            val view = layoutInflater.inflate(R.layout.item_home_quick, quickRow, false)
-            view.findViewById<ImageView>(R.id.quick_icon).setImageResource(icon)
-            view.findViewById<TextView>(R.id.quick_label).text = label
-            val params = view.layoutParams as LinearLayout.LayoutParams
-            params.marginEnd = if (index == actions.lastIndex) 0 else dp(8)
-            view.layoutParams = params
-            view.setOnClickListener { action() }
-            quickRow.addView(view)
-        }
-    }
-
-    private fun setupSeriesChips() {
-        seriesRow.removeAllViews()
-        for (series in SeriesCatalog.all) {
-            val chip = Chip(this).apply {
-                text = series.name.replace("系列 ", "")
-                isCheckable = false
-                isClickable = true
-                setOnClickListener {
-                    startActivity(
-                        Intent(this@HomeActivity, CatalogActivity::class.java)
-                            .putExtra("series_id", series.id)
-                    )
-                }
-            }
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            params.marginEnd = dp(8)
-            chip.layoutParams = params
-            seriesRow.addView(chip)
-        }
-    }
-
-    private fun openRandom() {
-        viewModel.random { article ->
-            if (article == null) {
-                Toast.makeText(this, "目录为空，先打开系列目录", Toast.LENGTH_SHORT).show()
-            } else {
-                openArticle(article.slug)
-            }
-        }
-    }
-
-    private fun showJumpDialog() {
-        val input = EditText(this).apply {
-            hint = "例如 173、CN-1000、scp-5000"
-            inputType = InputType.TYPE_CLASS_TEXT
-            setSingleLine()
-        }
-        val container = FrameLayout(this).apply {
-            setPadding(dp(24), dp(8), dp(24), 0)
-            addView(input)
-        }
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("按编号打开")
-            .setView(container)
-            .setPositiveButton("打开", null)
-            .setNegativeButton("取消", null)
-            .create()
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val slug = PageInput.normalize(input.text.toString())
-                if (slug == null) {
-                    input.error = "请输入 SCP 编号，例如 173 或 CN-1000"
-                } else {
-                    dialog.dismiss()
-                    openArticle(slug)
-                }
-            }
-        }
-        dialog.show()
-        input.requestFocus()
-    }
-
     private fun openArticle(slug: String) {
         val intent = Intent(this, MainActivity::class.java)
             .putExtra("slug", slug)
             .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
-
-    private fun dp(value: Int): Int {
-        return (value * resources.displayMetrics.density).roundToInt()
-    }
-
 }

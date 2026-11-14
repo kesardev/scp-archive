@@ -4,10 +4,8 @@ import android.content.Context
 import cc.kesardev.scparchive.reader.ReaderShellBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 data class RawPage(
     val html: String,
@@ -27,12 +25,10 @@ private data class NetworkResult(
  */
 class ArticleRepository(private val context: Context) {
 
+    private val client get() = NetworkClient.get(context)
+
     private val cache = ArticleCache(context)
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(25, TimeUnit.SECONDS)
-        .build()
 
     suspend fun load(slug: String, forceNetwork: Boolean = false): RawPage = withContext(Dispatchers.IO) {
         val cached = cache.read(slug)

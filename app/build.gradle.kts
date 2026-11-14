@@ -11,8 +11,8 @@ android {
         applicationId = "cc.kesardev.scparchive"
         minSdk = 24
         targetSdk = 35
-        versionCode = 5
-        versionName = "2.3-interactive"
+        versionCode = 13
+        versionName = "2.8.2-swipe"
     }
 
     buildTypes {
@@ -45,6 +45,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.activity:activity-ktx:1.9.3")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

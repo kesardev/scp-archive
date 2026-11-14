@@ -13,8 +13,9 @@ data class HomeArticle(
 
 data class HomeUiState(
     val daily: HomeArticle? = null,
+    val recommended: List<HomeArticle> = emptyList(),
+    val random: HomeArticle? = null,
     val continueReading: List<HomeArticle> = emptyList(),
-    val favorites: List<HomeArticle> = emptyList(),
     val topRated: List<HomeArticle> = emptyList(),
     val topRatedSource: String = "",
     val recent: List<HomeArticle> = emptyList(),

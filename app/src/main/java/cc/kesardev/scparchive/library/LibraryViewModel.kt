@@ -18,42 +18,39 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
 
     private val database = LibraryDatabase(application)
 
-    private val _entries = MutableLiveData<List<LibraryEntry>>(emptyList())
-    val entries: LiveData<List<LibraryEntry>> = _entries
+    private val _favorites = MutableLiveData<List<LibraryEntry>>(emptyList())
+    val favorites: LiveData<List<LibraryEntry>> = _favorites
 
-    private var currentTab = LibraryTab.FAVORITES
+    private val _history = MutableLiveData<List<LibraryEntry>>(emptyList())
+    val history: LiveData<List<LibraryEntry>> = _history
 
-    fun load(tab: LibraryTab) {
-        currentTab = tab
+    fun refresh() {
         viewModelScope.launch {
             val data = withContext(Dispatchers.IO) {
-                if (tab == LibraryTab.FAVORITES) database.favorites() else database.history()
+                database.favorites() to database.history()
             }
-            _entries.postValue(data)
+            _favorites.postValue(data.first)
+            _history.postValue(data.second)
         }
     }
 
-    fun refresh() {
-        load(currentTab)
-    }
-
-    fun remove(slug: String) {
+    fun remove(tab: LibraryTab, slug: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                if (currentTab == LibraryTab.FAVORITES) {
+                if (tab == LibraryTab.FAVORITES) {
                     database.removeFavorite(slug)
                 } else {
                     database.removeHistory(slug)
                 }
             }
-            load(currentTab)
+            refresh()
         }
     }
 
     fun clearHistory() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) { database.clearHistory() }
-            load(LibraryTab.HISTORY)
+            refresh()
         }
     }
 }

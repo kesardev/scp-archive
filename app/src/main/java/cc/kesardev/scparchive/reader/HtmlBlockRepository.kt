@@ -1,16 +1,15 @@
 package cc.kesardev.scparchive.reader
 
 import android.content.Context
+import cc.kesardev.scparchive.data.NetworkClient
 import cc.kesardev.scparchive.data.RequestRateLimiter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 data class HtmlBlockPage(
     val html: String,
@@ -23,12 +22,10 @@ data class HtmlBlockPage(
  */
 class HtmlBlockRepository(private val context: Context) {
 
+    private val client get() = NetworkClient.get(context)
+
     private val directory = File(context.cacheDir, "html-blocks").apply { mkdirs() }
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(25, TimeUnit.SECONDS)
-        .build()
 
     suspend fun load(url: String, force: Boolean = false): HtmlBlockPage =
         withContext(Dispatchers.IO) {

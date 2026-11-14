@@ -27,12 +27,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
             val previous = _state.value ?: HomeUiState()
             _state.value = local.copy(
+                random = previous.random,
                 topRated = previous.topRated,
                 topRatedSource = previous.topRatedSource,
                 recent = previous.recent,
                 recentSource = previous.recentSource,
                 remoteLoading = true
             )
+            loadRandom()
             val remote = try {
                 repository.remoteSnapshot(force)
             } catch (_: Exception) {
@@ -62,6 +64,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
             val current = _state.value ?: local
             _state.value = local.copy(
+                random = current.random,
                 topRated = current.topRated,
                 topRatedSource = current.topRatedSource,
                 recent = current.recent,
@@ -73,7 +76,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun random(onResult: (HomeArticle?) -> Unit) {
         viewModelScope.launch {
-            onResult(repository.randomArticle())
+            val article = repository.randomArticle()
+            if (article != null) {
+                _state.value = _state.value?.copy(random = article)
+            }
+            onResult(article)
+        }
+    }
+
+    private fun loadRandom() {
+        viewModelScope.launch {
+            val article = repository.randomArticle() ?: return@launch
+            _state.value = _state.value?.copy(random = article)
         }
     }
 }

@@ -1,14 +1,13 @@
 package cc.kesardev.scparchive.catalog
 
 import android.content.Context
+import cc.kesardev.scparchive.data.NetworkClient
 import cc.kesardev.scparchive.data.RequestRateLimiter
 import cc.kesardev.scparchive.reader.ReaderShellBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 data class CatalogPage(
     val entries: List<CatalogEntry>,
@@ -17,13 +16,11 @@ data class CatalogPage(
 
 class CatalogRepository(private val context: Context) {
 
+    private val client get() = NetworkClient.get(context)
+
     private val cache = SeriesCache(context)
     private val index = CatalogDatabase(context)
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(25, TimeUnit.SECONDS)
-        .build()
 
     suspend fun load(series: SeriesInfo, force: Boolean = false): CatalogPage = withContext(Dispatchers.IO) {
         val cached = cache.read(series.id)

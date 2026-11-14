@@ -4,9 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import cc.kesardev.scparchive.R
-import cc.kesardev.scparchive.catalog.CatalogActivity
 import cc.kesardev.scparchive.home.HomeActivity
 import cc.kesardev.scparchive.library.LibraryActivity
+import cc.kesardev.scparchive.series.SeriesActivity
 import cc.kesardev.scparchive.settings.SettingsActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -24,8 +24,8 @@ object BottomTabs {
         navigation.setOnItemSelectedListener { item ->
             val target = when (item.itemId) {
                 R.id.tab_home -> HomeActivity::class.java
-                R.id.tab_catalog -> CatalogActivity::class.java
                 R.id.tab_library -> LibraryActivity::class.java
+                R.id.tab_series -> SeriesActivity::class.java
                 R.id.tab_settings -> SettingsActivity::class.java
                 else -> null
             }

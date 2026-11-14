@@ -2,8 +2,6 @@ package cc.kesardev.scparchive.catalog
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -20,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.kesardev.scparchive.BaseActivity
 import cc.kesardev.scparchive.MainActivity
 import cc.kesardev.scparchive.R
-import cc.kesardev.scparchive.ui.BottomTabs
 import com.google.android.material.appbar.MaterialToolbar
 
 class CatalogActivity : BaseActivity() {
@@ -48,6 +45,8 @@ class CatalogActivity : BaseActivity() {
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = "系列目录"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener { finish() }
 
         spinner.adapter = ArrayAdapter(
             this,
@@ -74,7 +73,6 @@ class CatalogActivity : BaseActivity() {
         viewModel.state.observe(this) { state -> render(state) }
         viewModel.syncing.observe(this) { syncing ->
             progress.visibility = if (syncing) View.VISIBLE else View.GONE
-            invalidateOptionsMenu()
         }
         viewModel.syncMessage.observe(this) { message ->
             if (message.isNotEmpty()) {
@@ -82,15 +80,9 @@ class CatalogActivity : BaseActivity() {
             }
         }
         viewModel.load(SeriesCatalog.all[startIndex])
-        BottomTabs.bind(this, R.id.tab_catalog)
         if (intent.getBooleanExtra("sync", false)) {
             viewModel.syncAll()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        BottomTabs.select(this, R.id.tab_catalog)
     }
 
     private fun applySystemBarInsets() {
@@ -108,24 +100,6 @@ class CatalogActivity : BaseActivity() {
             )
             insets
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_catalog, menu)
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.action_sync)?.isEnabled = viewModel.syncing.value != true
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_sync) {
-            viewModel.syncAll()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun render(state: CatalogState) {

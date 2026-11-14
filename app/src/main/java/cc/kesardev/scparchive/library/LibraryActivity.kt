@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import cc.kesardev.scparchive.BaseActivity
 import cc.kesardev.scparchive.MainActivity
 import cc.kesardev.scparchive.R
@@ -26,9 +24,8 @@ class LibraryActivity : BaseActivity() {
 
     private lateinit var toolbar: MaterialToolbar
     private lateinit var tabs: TabLayout
-    private lateinit var status: TextView
-    private lateinit var list: RecyclerView
-    private lateinit var adapter: LibraryAdapter
+    private lateinit var pager: ViewPager2
+    private lateinit var pagerAdapter: LibraryPagerAdapter
 
     private var currentTab = LibraryTab.FAVORITES
 
@@ -40,19 +37,36 @@ class LibraryActivity : BaseActivity() {
 
         toolbar = findViewById(R.id.toolbar)
         tabs = findViewById(R.id.library_tabs)
-        status = findViewById(R.id.library_status)
-        list = findViewById(R.id.library_list)
+        pager = findViewById(R.id.library_pager)
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = "书架"
 
         tabs.addTab(tabs.newTab().setText("收藏"))
         tabs.addTab(tabs.newTab().setText("历史"))
+
+        pagerAdapter = LibraryPagerAdapter(
+            onOpen = { entry -> openEntry(entry) },
+            onRemove = { tab, entry -> viewModel.remove(tab, entry.slug) }
+        )
+        pager.adapter = pagerAdapter
+        pager.offscreenPageLimit = 1
+
+        pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                currentTab = if (position == 0) LibraryTab.FAVORITES else LibraryTab.HISTORY
+                if (tabs.selectedTabPosition != position) {
+                    tabs.selectTab(tabs.getTabAt(position))
+                }
+                invalidateOptionsMenu()
+            }
+        })
+
         tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                currentTab = if (tab.position == 0) LibraryTab.FAVORITES else LibraryTab.HISTORY
-                viewModel.load(currentTab)
-                invalidateOptionsMenu()
+                if (pager.currentItem != tab.position) {
+                    pager.setCurrentItem(tab.position, true)
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -62,24 +76,16 @@ class LibraryActivity : BaseActivity() {
             }
         })
 
-        adapter = LibraryAdapter(
-            onClick = { entry -> openEntry(entry) },
-            onRemove = { entry -> viewModel.remove(entry.slug) }
-        )
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = adapter
-
-        viewModel.entries.observe(this) { entries ->
-            adapter.submitList(entries)
-            status.text = if (entries.isEmpty()) {
-                if (currentTab == LibraryTab.FAVORITES) "暂无收藏" else "暂无阅读历史"
-            } else {
-                entries.size.toString() + " 条"
-            }
+        viewModel.favorites.observe(this) { entries ->
+            pagerAdapter.submit(LibraryTab.FAVORITES, entries)
+            invalidateOptionsMenu()
+        }
+        viewModel.history.observe(this) { entries ->
+            pagerAdapter.submit(LibraryTab.HISTORY, entries)
             invalidateOptionsMenu()
         }
 
-        viewModel.load(currentTab)
+        viewModel.refresh()
         BottomTabs.bind(this, R.id.tab_library)
     }
 
@@ -108,7 +114,8 @@ class LibraryActivity : BaseActivity() {
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val clear = menu.findItem(R.id.action_clear_history)
         clear?.isVisible = currentTab == LibraryTab.HISTORY
-        clear?.isEnabled = currentTab == LibraryTab.HISTORY && !viewModel.entries.value.isNullOrEmpty()
+        clear?.isEnabled = currentTab == LibraryTab.HISTORY &&
+            !viewModel.history.value.isNullOrEmpty()
         return super.onPrepareOptionsMenu(menu)
     }
 

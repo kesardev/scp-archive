@@ -5,7 +5,7 @@ HTML/CSS 与页面脚本行为所需的结构，并提供首页、目录、书�
 深色模式。
 
 - Package: cc.kesardev.scparchive
-- Version: 2.3-interactive (versionCode 5)
+- Version: 2.8.2-swipe (versionCode 13)
 - Android: minSdk 24, targetSdk 35
 - Repository: https://github.com/kesardev/scp-archive
 
@@ -45,39 +45,90 @@ package is not migrated automatically.
   split, progress bar and JS bridge.
 - Bundled fixtures: scp-173, scp-5000, scp-cn-1000 and scp-3029.
 
-## Home page (Phase 1)
+## Discover page (Phase 1)
 
-The launcher is now HomeActivity; MainActivity remains the reader. Phase 1
-started without bottom navigation; Phase 2 adds the shared tab bar while
-catalog, search and library remain separate screens.
+The launcher is now HomeActivity; MainActivity remains the reader.
 
 - Daily recommendation: a 12-entry curated rotation keyed by the local day, so it
   is stable for the day and works before any network request. "换一篇" cycles
   within the session.
+- Recommended: six editor-picked entries from the same curated set, rotated
+  around the daily pick so the row changes without repeating the hero card.
+- Random: a local SQLite random entry with a "换一篇" action. Before the first
+  full sync it falls back to the bundled index seeded from SCP I and SCP-CN I.
 - Continue reading: unfinished history entries (progress below 98%) from the
   library database, newest first, with a progress bar.
-- Favorites: the most recent six favorites, shown when present.
-- Quick actions: random catalog entry, open by number, search, and catalog
-  index sync. Number input accepts 173, CN-1000, full-width CN－1000 and full
-  wiki URLs. Catalog and library browsing live in the bottom tabs, so they are
-  not duplicated in Quick actions.
 - Top rated: the wiki SCP-only ranking endpoint, parsed from the content-scp
   table and cached for 12 hours.
 - Recent updates: the site-changes RSS feed, filtered to numbered SCP pages,
   deduplicated and cached for 30 minutes.
-- Series entry: all 15 series as chips; a chip opens the catalog already
-  positioned on that series.
 - Footer stats: local index size, favorites and history counts.
-- Startup is local-first: the curated card, history, favorites, quick actions,
-  series chips and stats render from SQLite and preferences before any network
-  call. A failed feed only hides or labels its own section; it never blocks the
-  page.
-- First run seeds the catalog index from the bundled SCP I and SCP-CN I series
-  pages, so random, open-by-number and daily cards work before a full sync.
+- Startup is local-first: the curated cards, random card, history and stats
+  render from SQLite and preferences before any network call. A failed feed only
+  hides or labels its own section; it never blocks the page.
+- Search, open-by-number, series chips and catalog sync are intentionally not
+  duplicated here; they live on the Series and Settings tabs.
+
+## Series structure (Phase 4/5)
+
+- Bottom navigation is 首页 / 书架 / 系列 / 设置. The launcher opens Discover.
+- The Series tab mirrors the Chinese wiki sidebar section “SCP图书馆” instead of
+  inventing tag categories. It is grouped into three sections:
+  - SCP 系列: 编号条目 opens the 10-series catalog; 故事 opens the eight
+    SCP series story editions (I–VIII).
+  - SCP-CN 系列: 编号条目 opens the catalog at CN series I; 故事 opens the four
+    CN series story editions (I–IV).
+  - SCP 图书馆: 故事, 原创故事, 原创系列, 设定, 原创设定, GoI 格式,
+    SCP 国际翻译中心, 被放逐者之图书馆 and 原创中心.
+- 设定 parses https://scp-wiki-cn.wikidot.com/canon-hub, reading the canon
+  blocks rather than the page TOC. 原创设定 parses canon-hub-cn the same way.
+- 故事 parses foundation-tales; 原创故事 parses foundation-tales-cn;
+  原创系列 parses the series-archive-cn table; GoI 格式 reads the organization
+  headings from goi-formats.
+- “按故事的页面名称排列” and “按故事的发布时间排列” are group headers with
+  A–Z / year chips as children. Selecting a child opens the story list at that
+  anchor instead of treating the index row as an article.
+- 被放逐者之图书馆 keeps only /wanderers links, so the library page header and
+  works stay together without pulling in unrelated site navigation.
+- Hub results are cached for 24 hours. Hub requests use a 45-second read timeout
+  and one automatic retry, because goi-formats can take longer than article
+  pages on a mobile connection.
+- Tag pages and TagParser remain in the codebase for future tag browsing, but
+  the Series tab no longer uses them.
+- The catalog is no longer a bottom tab. It opens from the Series tab, has a back
+  arrow, and keeps its per-series spinner and entry list.
+- Settings owns catalog sync: 同步目录索引 opens the catalog with sync=true and
+  shows the current index size. Sync refreshes all 15 series and rebuilds the
+  SQLite index used by search and random.
+- Search stays in the Series tab and keeps the same SQLite index.
+## App icon, proxy and reader menu (Phase 6)
+
+- Launcher icon: the Wikipedia SCP Foundation emblem SVG
+  (SCP_Foundation_(emblem).svg) is converted to an Android VectorDrawable.
+  Adaptive background, foreground and monochrome layers are vectors; legacy
+  PNGs for mdpi through xxxhdpi are rendered from the same SVG.
+  The foreground is scaled to 62% and legacy round icons to 54% so the
+  circular launcher mask does not clip the emblem.
+- Settings adds 网络代理:
+  - HTTP and SOCKS modes, with a free-form address field.
+  - Default state is disabled with an empty address. The user must enter a
+    proxy explicitly.
+  - 保存并测试 persists the setting, resets the shared client and probes
+    https://scp-wiki-cn.wikidot.com/ through the proxy.
+- The proxy is applied to every OkHttp repository (article, catalog, home, hub,
+  tag and HTML block). When enabled, WebView subresources (images and other
+  assets) are also fetched through the same client.
+- An https:// proxy address is treated as an HTTP CONNECT proxy, because
+  OkHttp's Proxy API has no TLS-to-proxy mode. SOCKS has no such limitation;
+  a SOCKS 127.0.0.1:10808 test passed with HTTP 200, after which the setting
+  was reset to blank/off for shipping.
+- Reader overflow menu no longer contains 外观设置, 系列目录 or 页面. Search,
+  favorites, TOC, Aa reading settings, in-page find, reload and open-in-browser
+  remain.
 
 ## Bottom tabs and appearance (Phase 2)
 
-- Bottom navigation: 首页 / 目录 / 书架 / 设置 on Home, Catalog, Library and
+- Bottom navigation: 首页 / 书架 / 系列 / 设置 on Discover, Library, Series and
   Settings. Tab switches use REORDER_TO_FRONT | SINGLE_TOP; Home uses CLEAR_TOP
   so returning home clears the tab history.
 - The selected tab is restored in onResume, so a screen never keeps the tab the
@@ -269,10 +320,10 @@ Installed and launched on HQ658W0041 (XQ_FE72, 1080x2340):
 - Gesture navigation: home content bottom 2277 px; 3-button: 2214 px, matching
   the reader safe-area behaviour. The device was restored to 3-button mode.
 
-- Bottom navigation renders on Home, Catalog, Library and Settings; the
+- Bottom navigation renders on Discover, Library, Series and Settings; the
   selected item matches the current screen and resets after returning from
   another tab.
-- Tapping 目录, 书架 and 设置 switches activities; back from a tab returns to the
+- Tapping 首页, 书架, 系列 and 设置 switches activities; back from a tab returns to the
   previous screen with the correct selected tab. Home uses CLEAR_TOP, so back
   from a home tab exits to the launcher.
 - 3-button: bottom nav 2004-2214 px; gesture: 2067-2277 px. No duplicate inset
@@ -320,6 +371,72 @@ Device screenshots and one Chrome-rendered interactive preview:
     preview/device-reader-dark.png
     preview/device-3029-dark.png
     preview/interactive-963.png
+
+## Discover and series validation (Phase 4)
+
+- Built with Gradle and 23/23 unit tests pass, including TagParser coverage for
+  list-only parsing, deduplication, query/hash stripping and percent-decoded
+  paths.
+- HQ658W0041, Android 17, 1080x2340, 3-button navigation:
+  - Discover shows 发现, SCP 基金会中文分部, 今日推荐, 为你推荐, 随机探索,
+    继续阅读 and the tabs 首页 / 书架 / 系列 / 设置.
+  - 系列 shows the search entry, 按编号打开 and the SCP 系列 / 故事 / 设定 /
+    GOI 格式 / 图书馆 / 竞赛 / 故事中心 / 补充材料 cards.
+  - 故事 parsed 99 entries online; 设定 parsed 1 entry online. Tag cache keys
+    now use UTF-8 bytes, so Chinese tag names no longer share one cache file.
+  - 系列目录 loaded 998 SCP I entries, has no bottom navigation and shows the
+    Navigate up arrow.
+  - 设置 shows 目录索引 with 已索引 2996 篇 · 15 个系列 and the sync card;
+    the app reports 2.4-discover.
+- ADB input injection is blocked by the host, so tab and card taps were checked
+  by launching each target activity directly and reading the UI tree. The test
+  activities were then restored to exported=false for the final APK.
+## SCP 图书馆 validation (Phase 5)
+
+- HQ658W0041, Android 17, after installing 2.5-library:
+  - Series shows the three sections SCP 系列 / SCP-CN 系列 / SCP 图书馆, with
+    编号条目 and 故事 under both numbered-series sections.
+  - 设定 parsed 43 canons from canon-hub online, including 死者手牌 and
+    循此苦旅，直抵群星.
+  - 故事 parsed 5 hub links from foundation-tales; 原创系列 parsed 31 series
+    from series-archive-cn; GoI 格式 parsed 65 organization hubs.
+  - GoI 格式 needed a longer first request and succeeded with the 45-second
+    timeout; later visits read the 24-hour cache.
+- 30/30 unit tests pass, including seven HubParser tests for canon, stories,
+  archive, GOI, library filtering and generic deduplication.
+- ADB input injection remains blocked by the host, so the grouped Series page
+  and hub screens were opened directly and checked through the UI tree. Final
+  internal activities are exported=false.
+## Icon, proxy and story grouping validation (Phase 6/7)
+
+- aapt dump badging reports res/mipmap-anydpi-v26/ic_launcher.xml as the
+  application icon, with the label SCP 档案库. The adaptive icon has background,
+  foreground and monochrome layers.
+- Proxy settings now open with the switch off and the address field empty.
+  A temporary SOCKS 127.0.0.1:10808 test returned HTTP 200; it was removed after
+  verification.
+- 原创故事 shows 按故事的页面名称排列 with A–Z chips and
+  按故事的发布时间排列 with year chips; 故事 shows the page-name group with
+  A–Z chips. The index rows are no longer ordinary article entries.
+- Opening tales-cn-by-page-name with anchor 202601 loaded the anchored story
+  list through the SOCKS test proxy.
+- 36/36 unit tests pass, including blank/off proxy defaults, HTTP/SOCKS parsing,
+  default ports and story grouping.
+- Temporary exported flags used for device checks were restored to
+  exported=false in the final APK.
+- 书架 was launched on HQ658W0041 and the UI tree contains the ViewPager2,
+  the 收藏/历史 tabs and the current 收藏 page with its status line.
+- The icon is now a vector adaptive icon; the legacy PNGs were regenerated from
+  the Wikipedia SVG.
+
+## Library swipe (Phase 8)
+
+- 书架 uses ViewPager2 with two pages: 收藏 and 历史.
+- The TabLayout and ViewPager2 stay in sync in both directions: tapping a tab
+  animates to its page, and swiping updates the selected tab.
+- Each page owns its own RecyclerView, status line and remove action; removing a
+  favorite or history entry refreshes both pages.
+- The 清空历史 overflow action is visible only on the history page.
 
 ## Relationship to SCP-Flutter
 
@@ -371,6 +488,8 @@ The Gradle wrapper jar and scripts are included.
         catalog/SeriesParser.kt
         data/ArticleCache.kt
         data/ArticleRepository.kt
+        data/NetworkClient.kt
+        data/ProxySettings.kt
         data/RequestRateLimiter.kt
         home/DailyPicks.kt
         home/HomeActivity.kt
@@ -380,6 +499,12 @@ The Gradle wrapper jar and scripts are included.
         home/HomeRepository.kt
         home/HomeViewModel.kt
         home/PageInput.kt
+        hub/HubActivity.kt
+        hub/HubAdapter.kt
+        hub/HubCache.kt
+        hub/HubParser.kt
+        hub/HubRepository.kt
+        hub/HubViewModel.kt
         library/LibraryActivity.kt
         library/LibraryAdapter.kt
         library/LibraryDatabase.kt
@@ -393,6 +518,12 @@ The Gradle wrapper jar and scripts are included.
         reader/HtmlBlockPreparer.kt
         reader/HtmlBlockRepository.kt
         reader/InteractiveActivity.kt
+        series/SeriesActivity.kt
+        series/TagActivity.kt
+        series/TagCache.kt
+        series/TagParser.kt
+        series/TagRepository.kt
+        series/TagViewModel.kt
         settings/AppearancePreferences.kt
         settings/SettingsActivity.kt
         settings/ThemeMode.kt
@@ -414,9 +545,18 @@ The Gradle wrapper jar and scripts are included.
         HomeSelectionTest.kt
         ThemeModeTest.kt
         InteractiveContentTest.kt
+        TagParserTest.kt
+        HubParserTest.kt
+        ProxySettingsTest.kt
       app/src/test/resources/pages/
       app/src/main/res/layout/
         activity_home.xml
+        activity_series.xml
+        activity_tag.xml
+        activity_hub.xml
+        item_hub.xml
+        item_hub_section.xml
+        item_series_category.xml
         activity_settings.xml
         activity_interactive.xml
         item_home_article.xml
@@ -424,6 +564,9 @@ The Gradle wrapper jar and scripts are included.
         item_home_recent.xml
       app/src/main/res/menu/
         menu_bottom.xml
+        menu_home.xml
+        menu_tag.xml
+        menu_hub.xml
         menu_interactive.xml
       tools/preview/
         build_preview.py

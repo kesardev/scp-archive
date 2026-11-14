@@ -7,6 +7,8 @@
         android:name=".ScpArchiveApp"
         android:allowBackup="true"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ScpArchive"
         android:usesCleartextTraffic="false">
@@ -29,6 +31,15 @@
             android:exported="false" />
         <activity
             android:name=".catalog.SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".series.SeriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".series.TagActivity"
+            android:exported="false" />
+        <activity
+            android:name=".hub.HubActivity"
             android:exported="false" />
         <activity
             android:name=".library.LibraryActivity"
