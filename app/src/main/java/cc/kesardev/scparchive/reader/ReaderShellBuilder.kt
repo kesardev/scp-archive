@@ -3,6 +3,7 @@ package cc.kesardev.scparchive.reader
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.net.URLEncoder
 
 /**
  * Builds the exact document the WebView loads.
@@ -26,6 +27,22 @@ object ReaderShellBuilder {
         "link[rel=stylesheet]"
     )
 
+    private val CHROME_IFRAME_MARKERS = listOf(
+        "interwikiframe",
+        "styleframe",
+        "credit%3abackmodule",
+        "credit:backmodule",
+        "resize-iframe",
+        "wdfiles.com/local--code/credit"
+    )
+
+    private val CHROME_CLASSES = setOf(
+        "page-rate-widget-box",
+        "creditRate",
+        "credit",
+        "rate-box-with-credit-button"
+    )
+
     data class Stats(
         val styles: Int,
         val images: Int,
@@ -36,7 +53,10 @@ object ReaderShellBuilder {
         val tabsets: Int,
         val collapsibles: Int,
         val onclickLeft: Int,
-        val javascriptLinksLeft: Int
+        val javascriptLinksLeft: Int,
+        val htmlBlocks: Int = 0,
+        val externalEmbeds: Int = 0,
+        val interactiveControls: Int = 0
     )
 
     data class Built(
@@ -49,7 +69,8 @@ object ReaderShellBuilder {
         rawHtml: String,
         baseUrl: String,
         assets: ReaderAssets,
-        theme: ReaderTheme = ReaderTheme.LIGHT
+        theme: ReaderTheme = ReaderTheme.LIGHT,
+        sourceUrl: String = baseUrl
     ): Built {
         val doc = Jsoup.parse(rawHtml, baseUrl)
         val pageContent = doc.selectFirst("#page-content")
@@ -60,7 +81,14 @@ object ReaderShellBuilder {
             ?: doc.title().trim().ifEmpty { "SCP" }
 
         val pageStyles = collectStyles(doc)
+        val htmlBlocks = pageContent.select("iframe").count { isHtmlBlock(it) }
+        val externalEmbeds = pageContent.select("iframe").count { isExternalEmbed(it) }
+        val interactiveControls = countInteractiveControls(pageContent)
         cleanContent(doc)
+
+        if (interactiveControls > 0) {
+            pageContent.prependChild(interactiveNotice(sourceUrl))
+        }
 
         val stats = Stats(
             styles = pageStyles.size,
@@ -72,7 +100,10 @@ object ReaderShellBuilder {
             tabsets = pageContent.select(".yui-navset").size,
             collapsibles = pageContent.select(".collapsible-block").size,
             onclickLeft = pageContent.select("[onclick]").size,
-            javascriptLinksLeft = pageContent.select("a").count { it.attr("href").startsWith("javascript:", ignoreCase = true) }
+            javascriptLinksLeft = pageContent.select("a").count { it.attr("href").startsWith("javascript:", ignoreCase = true) },
+            htmlBlocks = htmlBlocks,
+            externalEmbeds = externalEmbeds,
+            interactiveControls = interactiveControls
         )
 
         val html = shell(
@@ -104,19 +135,40 @@ object ReaderShellBuilder {
         }
 
         for (frame in doc.select("#page-content iframe").toList()) {
-            val src = frame.attr("src")
-            if (src.contains("interwikiFrame", ignoreCase = true) ||
-                src.contains("styleFrame", ignoreCase = true)
-            ) {
+            if (isChromeFrame(frame)) {
                 frame.remove()
                 continue
             }
-            val replacement = Element("p").addClass("reader-embed")
-            replacement.appendText("嵌入内容：")
-            replacement.appendElement("a")
-                .attr("href", src.ifBlank { "about:blank" })
-                .text("打开")
-            frame.replaceWith(replacement)
+            val src = frame.absUrl("src").ifBlank { frame.attr("src") }
+            if (src.isBlank() || src.startsWith("about:", ignoreCase = true)) {
+                frame.remove()
+                continue
+            }
+            if (isHtmlBlock(frame)) {
+                frame.replaceWith(
+                    interactiveCard(
+                        titleText = "互动式内容",
+                        description = "此条目包含互动式 HTML 内容。",
+                        primaryUrl = "scparchive://interactive?url=" + encode(src),
+                        primaryText = "进入互动版",
+                        fallbackUrl = src,
+                        fallbackText = "在浏览器打开"
+                    )
+                )
+            } else if (isExternalEmbed(frame)) {
+                frame.replaceWith(
+                    interactiveCard(
+                        titleText = "外部互动内容",
+                        description = "此条目包含外部互动页面。",
+                        primaryUrl = src,
+                        primaryText = "在浏览器打开",
+                        fallbackUrl = null,
+                        fallbackText = null
+                    )
+                )
+            } else {
+                frame.remove()
+            }
         }
 
         for (box in doc.select("#page-content .list-pages-box").toList()) {
@@ -153,6 +205,105 @@ object ReaderShellBuilder {
 
         doc.select("style").remove()
         doc.select("base").remove()
+    }
+
+    private fun isChromeFrame(frame: Element): Boolean {
+        val value = (frame.attr("src") + " " + frame.absUrl("src")).lowercase()
+        return CHROME_IFRAME_MARKERS.any { value.contains(it) }
+    }
+
+    private fun isHtmlBlock(frame: Element): Boolean {
+        if (frame.hasClass("html-block-iframe")) {
+            return true
+        }
+        val src = frame.absUrl("src")
+        if (src.isBlank()) {
+            return false
+        }
+        val uri = runCatching { java.net.URI(src) }.getOrNull() ?: return false
+        val host = uri.host?.lowercase() ?: return false
+        return (host == "scp-wiki-cn.wikidot.com" || host == "scp-wiki.wikidot.com") &&
+            uri.path?.contains("/html/") == true
+    }
+
+    private fun isExternalEmbed(frame: Element): Boolean {
+        if (isChromeFrame(frame) || isHtmlBlock(frame)) {
+            return false
+        }
+        val src = frame.absUrl("src").ifBlank { frame.attr("src") }
+        if (src.isBlank() || src.startsWith("about:", ignoreCase = true)) {
+            return false
+        }
+        val uri = runCatching { java.net.URI(src) }.getOrNull() ?: return false
+        val scheme = uri.scheme?.lowercase()
+        if (scheme != "http" && scheme != "https") {
+            return false
+        }
+        val host = uri.host?.lowercase() ?: return false
+        return host != "scp-wiki-cn.wikidot.com" && host != "scp-wiki.wikidot.com"
+    }
+
+    private fun countInteractiveControls(pageContent: Element): Int {
+        return pageContent
+            .select("[onclick], form, input, button, select, textarea")
+            .count { !isChromeElement(it) }
+    }
+
+    private fun isChromeElement(element: Element): Boolean {
+        if (CHROME_CLASSES.any { element.hasClass(it) }) {
+            return true
+        }
+        return element.parents().any { parent ->
+            CHROME_CLASSES.any { parent.hasClass(it) }
+        }
+    }
+
+    private fun interactiveCard(
+        titleText: String,
+        description: String,
+        primaryUrl: String?,
+        primaryText: String?,
+        fallbackUrl: String?,
+        fallbackText: String?
+    ): Element {
+        val card = Element("p").addClass("reader-interactive-block")
+        card.appendElement("span").addClass("reader-interactive-title").text(titleText)
+        card.appendElement("span").addClass("reader-interactive-desc").text(description)
+        val actions = card.appendElement("span").addClass("reader-interactive-actions")
+        if (primaryUrl != null && primaryText != null) {
+            actions.appendElement("a")
+                .addClass("reader-interactive-action")
+                .attr("href", primaryUrl)
+                .text(primaryText)
+        }
+        if (fallbackUrl != null && fallbackText != null) {
+            if (primaryUrl != null) {
+                actions.appendText(" · ")
+            }
+            actions.appendElement("a")
+                .addClass("reader-interactive-action")
+                .attr("href", fallbackUrl)
+                .attr("data-reader-external", "1")
+                .text(fallbackText)
+        }
+        return card
+    }
+
+    private fun interactiveNotice(sourceUrl: String): Element {
+        val notice = Element("p").addClass("reader-interactive-notice")
+        notice.appendText("此条目包含页面级互动元素，阅读器仅显示静态内容。")
+        if (sourceUrl.isNotBlank()) {
+            notice.appendText(" ")
+            notice.appendElement("a")
+                .attr("href", sourceUrl)
+                .attr("data-reader-external", "1")
+                .text("在浏览器打开原页")
+        }
+        return notice
+    }
+
+    private fun encode(value: String): String {
+        return runCatching { URLEncoder.encode(value, "UTF-8") }.getOrDefault(value)
     }
 
     private fun upgradeToHttps(url: String): String {
