@@ -48,6 +48,7 @@ class HomeRepository(private val context: Context) {
                 tagline = pick.tagline
             ),
             recommended = recommended(pick),
+            heat = buildHeat(history, favorites),
             continueReading = history
                 .filter { it.progress < 0.98f && !it.slug.contains("/html/", ignoreCase = true) }
                 .take(6)
@@ -61,11 +62,11 @@ class HomeRepository(private val context: Context) {
 
     suspend fun remoteSnapshot(force: Boolean = false): RemoteSnapshot = withContext(Dispatchers.IO) {
         val top = loadFeed(
-            name = "top-rated",
+            name = "top-rated-40",
             path = TOP_RATED_PATH,
             maxAgeMs = TOP_RATED_TTL,
             force = force
-        ) { HomeParser.parseTopRated(it) }
+        ) { HomeParser.parseTopRated(it, 40) }
         val recent = loadFeed(
             name = "recent",
             path = RECENT_PATH,
@@ -99,6 +100,36 @@ class HomeRepository(private val context: Context) {
                 tagline = pick.tagline
             )
         }
+    }
+
+    private fun buildHeat(
+        history: List<LibraryEntry>,
+        favorites: List<LibraryEntry>
+    ): List<HomeHeat> {
+        val favoriteSlugs = favorites.map { it.slug }.toHashSet()
+        val items = LinkedHashMap<String, HomeHeat>()
+        for (entry in history) {
+            items[entry.slug] = HomeHeat(
+                slug = entry.slug,
+                title = entry.title.ifBlank { entry.slug.uppercase() },
+                readCount = entry.readCount,
+                lastReadAt = entry.timestamp,
+                progress = entry.progress,
+                favorite = entry.slug in favoriteSlugs
+            )
+        }
+        for (entry in favorites) {
+            if (items.containsKey(entry.slug)) {
+                continue
+            }
+            items[entry.slug] = HomeHeat(
+                slug = entry.slug,
+                title = entry.title.ifBlank { entry.slug.uppercase() },
+                lastReadAt = entry.timestamp,
+                favorite = true
+            )
+        }
+        return items.values.toList()
     }
 
     private fun ensureCatalog(): Int {

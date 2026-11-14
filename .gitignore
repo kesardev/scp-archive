@@ -8,3 +8,5 @@ local.properties
 .DS_Store
 .toolchain/
 *-out.log
+.signing/
+keystore.properties

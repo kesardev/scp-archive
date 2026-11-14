@@ -17,6 +17,7 @@ import cc.kesardev.scparchive.MainActivity
 import cc.kesardev.scparchive.R
 import cc.kesardev.scparchive.ui.BottomTabs
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -34,6 +35,8 @@ class HomeActivity : BaseActivity() {
     private lateinit var heroShuffle: TextView
     private lateinit var sectionRecommended: View
     private lateinit var recommendedRow: LinearLayout
+    private lateinit var recommendModes: MaterialButtonToggleGroup
+    private lateinit var recommendShuffle: TextView
     private lateinit var randomCard: View
     private lateinit var randomTitle: TextView
     private lateinit var randomMeta: TextView
@@ -68,6 +71,8 @@ class HomeActivity : BaseActivity() {
         heroShuffle = findViewById(R.id.hero_shuffle)
         sectionRecommended = findViewById(R.id.section_recommended)
         recommendedRow = findViewById(R.id.recommended_row)
+        recommendModes = findViewById(R.id.recommend_modes)
+        recommendShuffle = findViewById(R.id.recommend_shuffle)
         randomCard = findViewById(R.id.random_card)
         randomTitle = findViewById(R.id.random_title)
         randomMeta = findViewById(R.id.random_meta)
@@ -89,6 +94,20 @@ class HomeActivity : BaseActivity() {
 
         heroCard.setOnClickListener { state.daily?.let { openArticle(it.slug) } }
         heroShuffle.setOnClickListener { shuffleDaily() }
+        recommendModes.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) {
+                return@addOnButtonCheckedListener
+            }
+            viewModel.setRecommendMode(
+                when (checkedId) {
+                    R.id.recommend_mode_rating -> RecommendMode.RATING
+                    R.id.recommend_mode_heat -> RecommendMode.HEAT
+                    else -> RecommendMode.MIXED
+                }
+            )
+        }
+        recommendShuffle.setOnClickListener { viewModel.shuffleRecommended() }
+
         randomCard.setOnClickListener { state.random?.let { openArticle(it.slug) } }
         randomShuffle.setOnClickListener {
             viewModel.random { article ->
@@ -151,12 +170,20 @@ class HomeActivity : BaseActivity() {
 
         sectionRecommended.visibility =
             if (value.recommended.isEmpty()) View.GONE else View.VISIBLE
+        val modeButton = when (value.recommendMode) {
+            RecommendMode.RATING -> R.id.recommend_mode_rating
+            RecommendMode.HEAT -> R.id.recommend_mode_heat
+            RecommendMode.MIXED -> R.id.recommend_mode_mixed
+        }
+        if (recommendModes.checkedButtonId != modeButton) {
+            recommendModes.check(modeButton)
+        }
         recommendedRow.removeAllViews()
         for (article in value.recommended) {
             addArticleCard(
                 recommendedRow,
                 article,
-                "推荐",
+                value.recommendMode.badge,
                 showProgress = false,
                 forcedMeta = article.subtitle
             )

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import cc.kesardev.scparchive.BaseActivity
 import cc.kesardev.scparchive.MainActivity
 import cc.kesardev.scparchive.R
+import cc.kesardev.scparchive.story.StoryIndexActivity
+import cc.kesardev.scparchive.story.StoryIndexMode
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
@@ -31,6 +33,7 @@ class HubActivity : BaseActivity() {
     private var path: String = ""
     private var mode: HubMode = HubMode.GENERIC
     private var isStatic: Boolean = false
+    private var seriesMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,7 @@ class HubActivity : BaseActivity() {
         mode = HubMode.from(intent.getStringExtra("mode"))
         val links = intent.getStringArrayListExtra("links")
         val linkTitles = intent.getStringArrayListExtra("link_titles")
+        seriesMode = intent.getBooleanExtra("series_mode", false)
 
         toolbar = findViewById(R.id.toolbar)
         progress = findViewById(R.id.hub_progress)
@@ -132,6 +136,32 @@ class HubActivity : BaseActivity() {
     }
 
     private fun openEntry(entry: HubEntry, anchor: String?) {
+        if (anchor == null) {
+            val indexTitle = when (entry.slug) {
+                "tales-by-page-name" -> "基金会故事 · 按名称"
+                "tales-cn-by-page-name" -> "原创故事 · 按名称"
+                "tales-cn-by-create-time" -> "原创故事 · 按时间"
+                else -> null
+            }
+            if (indexTitle != null) {
+                startActivity(
+                    Intent(this, StoryIndexActivity::class.java)
+                        .putExtra("path", entry.slug)
+                        .putExtra("mode", StoryIndexMode.NAME.name)
+                        .putExtra("title", indexTitle)
+                )
+                return
+            }
+            if (seriesMode || path == "series-archive" || path == "series-archive-cn") {
+                startActivity(
+                    Intent(this, StoryIndexActivity::class.java)
+                        .putExtra("path", entry.slug)
+                        .putExtra("mode", StoryIndexMode.SERIES.name)
+                        .putExtra("title", entry.title)
+                )
+                return
+            }
+        }
         val intent = Intent(this, MainActivity::class.java)
             .putExtra("slug", entry.slug)
             .putExtra("anchor", anchor)

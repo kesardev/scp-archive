@@ -42,6 +42,9 @@
             android:name=".hub.HubActivity"
             android:exported="false" />
         <activity
+            android:name=".story.StoryIndexActivity"
+            android:exported="false" />
+        <activity
             android:name=".library.LibraryActivity"
             android:exported="false" />
         <activity

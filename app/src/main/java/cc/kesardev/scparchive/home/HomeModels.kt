@@ -1,5 +1,11 @@
 package cc.kesardev.scparchive.home
 
+enum class RecommendMode(val badge: String) {
+    MIXED("精选"),
+    RATING("高分"),
+    HEAT("热门")
+}
+
 data class HomeArticle(
     val slug: String,
     val title: String,
@@ -11,9 +17,20 @@ data class HomeArticle(
     val timestamp: Long = 0L
 )
 
+data class HomeHeat(
+    val slug: String,
+    val title: String,
+    val readCount: Int = 0,
+    val lastReadAt: Long = 0L,
+    val progress: Float = 0f,
+    val favorite: Boolean = false
+)
+
 data class HomeUiState(
     val daily: HomeArticle? = null,
     val recommended: List<HomeArticle> = emptyList(),
+    val recommendMode: RecommendMode = RecommendMode.MIXED,
+    val heat: List<HomeHeat> = emptyList(),
     val random: HomeArticle? = null,
     val continueReading: List<HomeArticle> = emptyList(),
     val topRated: List<HomeArticle> = emptyList(),

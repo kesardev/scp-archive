@@ -134,7 +134,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="为你推荐"
+                        android:text="动态精选"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
@@ -144,13 +144,66 @@
                         android:layout_weight="1" />
 
                     <TextView
+                        android:id="@+id/recommend_shuffle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="编辑精选"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="11sp" />
+                        android:background="?attr/selectableItemBackground"
+                        android:paddingLeft="12dp"
+                        android:paddingTop="4dp"
+                        android:paddingRight="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="换一批"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/recommend_modes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/recommend_mode_mixed"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:paddingLeft="18dp"
+                        android:paddingRight="18dp"
+                        android:text="混合"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/recommend_mode_rating"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:paddingLeft="18dp"
+                        android:paddingRight="18dp"
+                        android:text="评分"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/recommend_mode_heat"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:paddingLeft="18dp"
+                        android:paddingRight="18dp"
+                        android:text="热度"
+                        android:textSize="12sp" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -266,6 +319,7 @@
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
+                
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -314,6 +368,7 @@
                         android:textSize="11sp" />
                 </LinearLayout>
 
+                
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -136,19 +136,39 @@
                         android:textSize="20sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+            <LinearLayout
+                android:id="@+id/scp_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical" />
 
+            <LinearLayout
+                android:id="@+id/cn_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="26dp"
                 android:letterSpacing="0.08"
-                android:text="SCP 系列"
+                android:text="故事与设定"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="故事"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
             <LinearLayout
-                android:id="@+id/scp_categories"
+                android:id="@+id/story_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -157,15 +177,28 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
-                android:letterSpacing="0.08"
-                android:text="SCP-CN 系列"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="故事系列"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/cn_categories"
+                android:id="@+id/story_series_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="设定"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/setting_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -185,7 +218,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="故事、设定与基金会宇宙的其他入口"
+                android:text="SCP 国际、GoI 与图书馆的其他入口"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp" />
 
@@ -201,7 +234,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="分类与中文分部侧栏的“SCP图书馆”栏目保持一致；中心页结果会缓存 24 小时。"
+                android:text="故事与设定按 EN/CN 分开；中心页结果会缓存 24 小时。"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="11sp" />
         </LinearLayout>

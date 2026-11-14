@@ -29,6 +29,9 @@ class SeriesActivity : BaseActivity() {
     private lateinit var toolbar: MaterialToolbar
     private lateinit var scpCategories: LinearLayout
     private lateinit var cnCategories: LinearLayout
+    private lateinit var storyCategories: LinearLayout
+    private lateinit var storySeriesCategories: LinearLayout
+    private lateinit var settingCategories: LinearLayout
     private lateinit var libraryCategories: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +43,9 @@ class SeriesActivity : BaseActivity() {
         toolbar = findViewById(R.id.toolbar)
         scpCategories = findViewById(R.id.scp_categories)
         cnCategories = findViewById(R.id.cn_categories)
+        storyCategories = findViewById(R.id.story_categories)
+        storySeriesCategories = findViewById(R.id.story_series_categories)
+        settingCategories = findViewById(R.id.setting_categories)
         libraryCategories = findViewById(R.id.library_categories)
 
         setSupportActionBar(toolbar)
@@ -74,24 +80,16 @@ class SeriesActivity : BaseActivity() {
         addCategory(
             scpCategories,
             "01",
-            "编号条目",
+            "SCP 系列",
             "SCP-001 – SCP-8999 · 10 个系列"
         ) {
             startActivity(Intent(this, CatalogActivity::class.java))
-        }
-        addCategory(
-            scpCategories,
-            "故",
-            "故事",
-            "系列 I – VIII 的故事集"
-        ) {
-            openStoryEditions(cn = false)
         }
 
         addCategory(
             cnCategories,
             "02",
-            "编号条目",
+            "SCP-CN 系列",
             "SCP-CN-001 – CN-4999 · 5 个系列"
         ) {
             startActivity(
@@ -99,30 +97,34 @@ class SeriesActivity : BaseActivity() {
                     .putExtra("series_id", "scp-series-cn")
             )
         }
-        addCategory(
-            cnCategories,
-            "故",
-            "故事",
-            "CN 系列 I – IV 的故事集"
-        ) {
+
+        addCategory(storyCategories, "EN", "基金会故事", "基金会本部故事中心页") {
+            openHub("基金会故事", "foundation-tales", HubMode.STORIES)
+        }
+        addCategory(storyCategories, "CN", "原创故事", "中文分部原创故事中心页") {
+            openHub("原创故事", "foundation-tales-cn", HubMode.STORIES)
+        }
+        addCategory(storyCategories, "EN", "SCP 系列故事", "系列 I – VIII 的故事集") {
+            openStoryEditions(cn = false)
+        }
+        addCategory(storyCategories, "CN", "CN 系列故事", "CN 系列 I – IV 的故事集") {
             openStoryEditions(cn = true)
         }
 
-        addCategory(libraryCategories, "故", "故事", "基金会本部故事中心页") {
-            openHub("故事", "foundation-tales", HubMode.STORIES)
+        addCategory(storySeriesCategories, "EN", "故事系列", "基金会本部故事系列中心页列表") {
+            openHub("故事系列", "series-archive", HubMode.ARCHIVE)
         }
-        addCategory(libraryCategories, "原", "原创故事", "中文分部原创故事中心页") {
-            openHub("原创故事", "foundation-tales-cn", HubMode.STORIES)
-        }
-        addCategory(libraryCategories, "系", "原创系列", "中文分部原创故事系列列表") {
+        addCategory(storySeriesCategories, "CN", "原创系列", "中文分部原创故事系列列表") {
             openHub("原创系列", "series-archive-cn", HubMode.ARCHIVE)
         }
-        addCategory(libraryCategories, "设", "设定", "基金会宇宙的共享设定中心") {
+
+        addCategory(settingCategories, "EN", "设定中心", "基金会宇宙的共享设定中心") {
             openHub("设定", "canon-hub", HubMode.CANON)
         }
-        addCategory(libraryCategories, "原", "原创设定", "中文分部原创设定中心") {
+        addCategory(settingCategories, "CN", "原创设定", "中文分部原创设定中心") {
             openHub("原创设定", "canon-hub-cn", HubMode.CANON)
         }
+
         addCategory(libraryCategories, "GoI", "GoI 格式", "相关组织文档格式与中心页") {
             openHub("GoI 格式", "goi-formats", HubMode.GOI)
         }
@@ -136,7 +138,6 @@ class SeriesActivity : BaseActivity() {
             openHub("原创中心", "wanderers:the-library-cn", HubMode.LIBRARY)
         }
     }
-
     private fun addCategory(
         container: LinearLayout,
         badge: String,
@@ -166,6 +167,7 @@ class SeriesActivity : BaseActivity() {
                 .putExtra("title", if (cn) "SCP-CN 系列故事" else "SCP 系列故事")
                 .putStringArrayListExtra("links", links)
                 .putStringArrayListExtra("link_titles", titles)
+                .putExtra("series_mode", true)
         )
     }
 

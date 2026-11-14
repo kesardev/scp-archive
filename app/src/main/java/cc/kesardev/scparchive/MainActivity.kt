@@ -298,7 +298,8 @@ class MainActivity : BaseActivity() {
 
     private fun recordHistory(progress: Float) {
         val now = System.currentTimeMillis()
-        if (now - lastHistoryWrite < 2500L) {
+        val newSession = lastHistoryWrite == 0L
+        if (!newSession && now - lastHistoryWrite < 2500L) {
             return
         }
         lastHistoryWrite = now
@@ -306,7 +307,7 @@ class MainActivity : BaseActivity() {
         val title = currentTitle.ifBlank { slug.uppercase() }
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                libraryDb.recordHistory(slug, title, progress)
+                libraryDb.recordHistory(slug, title, progress, incrementRead = newSession)
             }
         }
     }
