@@ -57,9 +57,10 @@ catalog, search and library remain separate screens.
 - Continue reading: unfinished history entries (progress below 98%) from the
   library database, newest first, with a progress bar.
 - Favorites: the most recent six favorites, shown when present.
-- Quick actions: random catalog entry, open by number, series catalog and
-  library. Number input accepts 173, CN-1000, full-width CN－1000 and full wiki
-  URLs.
+- Quick actions: random catalog entry, open by number, search, and catalog
+  index sync. Number input accepts 173, CN-1000, full-width CN－1000 and full
+  wiki URLs. Catalog and library browsing live in the bottom tabs, so they are
+  not duplicated in Quick actions.
 - Top rated: the wiki SCP-only ranking endpoint, parsed from the content-scp
   table and cached for 12 hours.
 - Recent updates: the site-changes RSS feed, filtered to numbered SCP pages,
