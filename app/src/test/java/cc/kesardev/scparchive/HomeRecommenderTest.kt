@@ -155,4 +155,46 @@ class HomeRecommenderTest {
 
         assertEquals((1..6).map { "scp-" + it }, first.map { it.slug })
         assertEquals(listOf("scp-7", "scp-8", "scp-1", "scp-2", "scp-3", "scp-4"), second.map { it.slug })
+    }
+    @Test
+    fun alternatesCnOriginalsAndMainSeries() {
+        val cnPool = (1..6).map { index ->
+            HomeArticle("scp-cn-" + index, "CN " + index, rating = 6000 - index * 10)
+        }
+        val scpPool = (1..6).map { index ->
+            HomeArticle("scp-" + index, "SCP " + index, rating = 12000 - index * 10)
+        }
+
+        val result = HomeRecommender.recommend(
+            ratingPool = cnPool,
+            heat = emptyList(),
+            dailySlug = null,
+            excludeSlugs = emptySet(),
+            scpPool = scpPool,
+            limit = 6
+        )
+
+        val cnCount = result.count { it.slug.startsWith("scp-cn-") }
+        assertEquals(3, cnCount)
+        assertEquals(3, result.size - cnCount)
+        assertEquals("scp-cn-1", result[0].slug)
+        assertEquals("scp-1", result[1].slug)
+    }
+
+    @Test
+    fun keepsOrderWhenOnlyOneSeriesIsAvailable() {
+        val cnPool = (1..4).map { index ->
+            HomeArticle("scp-cn-" + index, "CN " + index, rating = 900 - index * 10)
+        }
+
+        val result = HomeRecommender.recommend(
+            ratingPool = cnPool,
+            heat = emptyList(),
+            dailySlug = null,
+            excludeSlugs = emptySet(),
+            scpPool = emptyList(),
+            limit = 6
+        )
+
+        assertEquals(listOf("scp-cn-1", "scp-cn-2", "scp-cn-3", "scp-cn-4"), result.map { it.slug })
     }}

@@ -26,15 +26,23 @@ data class HomeHeat(
     val favorite: Boolean = false
 )
 
+data class FeaturedItem(
+    val slug: String,
+    val title: String,
+    val tagline: String = "",
+    val author: String = "",
+    val group: String = ""
+)
+
 data class HomeUiState(
     val daily: HomeArticle? = null,
     val recommended: List<HomeArticle> = emptyList(),
     val recommendMode: RecommendMode = RecommendMode.MIXED,
+    val featured: List<FeaturedItem> = emptyList(),
+    val featuredSource: String = "",
     val heat: List<HomeHeat> = emptyList(),
     val random: HomeArticle? = null,
     val continueReading: List<HomeArticle> = emptyList(),
-    val topRated: List<HomeArticle> = emptyList(),
-    val topRatedSource: String = "",
     val recent: List<HomeArticle> = emptyList(),
     val recentSource: String = "",
     val catalogCount: Int = 0,

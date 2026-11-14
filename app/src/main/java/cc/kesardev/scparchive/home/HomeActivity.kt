@@ -43,9 +43,9 @@ class HomeActivity : BaseActivity() {
     private lateinit var randomShuffle: TextView
     private lateinit var sectionContinue: View
     private lateinit var continueRow: LinearLayout
-    private lateinit var sectionTopRated: View
-    private lateinit var topRatedRow: LinearLayout
-    private lateinit var topRatedSource: TextView
+    private lateinit var sectionFeatured: View
+    private lateinit var featuredList: LinearLayout
+    private lateinit var featuredSource: TextView
     private lateinit var sectionRecent: View
     private lateinit var recentList: LinearLayout
     private lateinit var recentSource: TextView
@@ -79,9 +79,9 @@ class HomeActivity : BaseActivity() {
         randomShuffle = findViewById(R.id.random_shuffle)
         sectionContinue = findViewById(R.id.section_continue)
         continueRow = findViewById(R.id.continue_row)
-        sectionTopRated = findViewById(R.id.section_top_rated)
-        topRatedRow = findViewById(R.id.top_rated_row)
-        topRatedSource = findViewById(R.id.top_rated_source)
+        sectionFeatured = findViewById(R.id.section_featured)
+        featuredList = findViewById(R.id.featured_list)
+        featuredSource = findViewById(R.id.featured_source)
         sectionRecent = findViewById(R.id.section_recent)
         recentList = findViewById(R.id.recent_list)
         recentSource = findViewById(R.id.recent_source)
@@ -93,7 +93,7 @@ class HomeActivity : BaseActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
         heroCard.setOnClickListener { state.daily?.let { openArticle(it.slug) } }
-        heroShuffle.setOnClickListener { shuffleDaily() }
+        heroShuffle.setOnClickListener { viewModel.shuffleDaily() }
         recommendModes.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) {
                 return@addOnButtonCheckedListener
@@ -196,19 +196,7 @@ class HomeActivity : BaseActivity() {
             addArticleCard(continueRow, article, "继续阅读", showProgress = true)
         }
 
-        sectionTopRated.visibility = if (value.topRated.isEmpty()) View.GONE else View.VISIBLE
-        topRatedSource.text = value.topRatedSource
-        topRatedRow.removeAllViews()
-        value.topRated.forEachIndexed { index, article ->
-            val rank = if (article.rank > 0) article.rank else index + 1
-            addArticleCard(
-                topRatedRow,
-                article,
-                String.format(Locale.CHINA, "TOP %02d", rank),
-                showProgress = false,
-                forcedMeta = article.subtitle
-            )
-        }
+        renderFeatured(value.featured, value.featuredSource)
 
         sectionRecent.visibility = if (value.recent.isEmpty()) View.GONE else View.VISIBLE
         recentSource.text = value.recentSource
@@ -231,7 +219,7 @@ class HomeActivity : BaseActivity() {
         }
         heroTitle.text = article.title
         heroTagline.text = article.tagline
-        heroMeta.text = "每日轮换 · 离线可用"
+        heroMeta.text = article.subtitle.ifBlank { "每日轮换 · 离线可用" }
     }
 
     private fun renderRandom(article: HomeArticle?) {
@@ -248,15 +236,39 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    private fun shuffleDaily() {
-        val current = state.daily?.slug
-        val index = DailyPicks.all.indexOfFirst { it.slug == current }.coerceAtLeast(0)
-        val next = DailyPicks.all[
-            ((index + 1) % DailyPicks.all.size + DailyPicks.all.size) % DailyPicks.all.size
-        ]
-        val article = HomeArticle(next.slug, next.name, "今日推荐", next.tagline)
-        state = state.copy(daily = article)
-        renderHero(article)
+    private fun renderFeatured(items: List<FeaturedItem>, source: String) {
+        sectionFeatured.visibility = if (items.isEmpty()) View.GONE else View.VISIBLE
+        featuredSource.text = source
+        featuredList.removeAllViews()
+        var lastGroup = ""
+        for (item in items) {
+            if (item.group.isNotEmpty() && item.group != lastGroup) {
+                lastGroup = item.group
+                val heading = layoutInflater.inflate(
+                    R.layout.item_featured_group,
+                    featuredList,
+                    false
+                ) as TextView
+                heading.text = item.group
+                featuredList.addView(heading)
+            }
+            val card = layoutInflater.inflate(R.layout.item_featured, featuredList, false)
+            card.findViewById<TextView>(R.id.featured_title).text = item.title
+            val tagline = card.findViewById<TextView>(R.id.featured_tagline)
+            if (item.tagline.isBlank()) {
+                tagline.visibility = View.GONE
+            } else {
+                tagline.text = item.tagline
+            }
+            val author = card.findViewById<TextView>(R.id.featured_author)
+            if (item.author.isBlank()) {
+                author.visibility = View.GONE
+            } else {
+                author.text = "by " + item.author
+            }
+            card.setOnClickListener { openArticle(item.slug) }
+            featuredList.addView(card)
+        }
     }
 
     private fun addArticleCard(

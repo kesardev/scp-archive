@@ -134,7 +134,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="动态精选"
+                        android:text="人气推荐"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
@@ -336,7 +336,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/section_top_rated"
+                android:id="@+id/section_featured"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -351,7 +351,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="高分条目"
+                        android:text="精品推荐"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
@@ -361,27 +361,19 @@
                         android:layout_weight="1" />
 
                     <TextView
-                        android:id="@+id/top_rated_source"
+                        android:id="@+id/featured_source"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="11sp" />
                 </LinearLayout>
 
-                
-                <HorizontalScrollView
+                <LinearLayout
+                    android:id="@+id/featured_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:clipToPadding="false"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/top_rated_row"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical" />
             </LinearLayout>
 
             <LinearLayout

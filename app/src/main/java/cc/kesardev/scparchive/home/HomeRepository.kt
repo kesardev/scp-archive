@@ -12,12 +12,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.io.IOException
+import java.io.File
 
 data class RemoteSnapshot(
     val topRated: List<HomeArticle>,
     val topRatedSource: String,
     val recent: List<HomeArticle>,
-    val recentSource: String
+    val recentSource: String,
+    val scpTopRated: List<HomeArticle> = emptyList(),
+    val featured: List<FeaturedItem> = emptyList(),
+    val featuredSource: String = ""
 )
 
 private data class FeedResult(
@@ -32,6 +36,7 @@ class HomeRepository(private val context: Context) {
     private val library = LibraryDatabase(context)
     private val catalog = CatalogDatabase(context)
     private val cache = HomeCache(context)
+    private val featuredCache = FeaturedCache(context)
 
 
     suspend fun localSnapshot(): HomeUiState = withContext(Dispatchers.IO) {
@@ -73,7 +78,22 @@ class HomeRepository(private val context: Context) {
             maxAgeMs = RECENT_TTL,
             force = force
         ) { HomeParser.parseRecent(it) }
-        RemoteSnapshot(top.items, top.source, recent.items, recent.source)
+        val scp = loadFeed(
+            name = "top-rated-en",
+            path = EN_TOP_RATED_URL,
+            maxAgeMs = TOP_RATED_TTL,
+            force = force
+        ) { HomeParser.parseEnglishTopRated(it, 24) }
+        val featured = loadFeatured(force)
+        RemoteSnapshot(
+            topRated = top.items,
+            topRatedSource = top.source,
+            recent = recent.items,
+            recentSource = recent.source,
+            scpTopRated = scp.items,
+            featured = featured.first,
+            featuredSource = featured.second
+        )
     }
 
     suspend fun randomArticle(): HomeArticle? = withContext(Dispatchers.IO) {
@@ -88,6 +108,47 @@ class HomeRepository(private val context: Context) {
         HomeArticle(pick.slug, pick.name, subtitle = "随机条目", tagline = pick.tagline)
     }
 
+
+    suspend fun dailySummary(slug: String, title: String): String = withContext(Dispatchers.IO) {
+        val file = File(context.cacheDir, "home/summary2-" + slug + ".txt")
+        if (file.exists() && System.currentTimeMillis() - file.lastModified() < SUMMARY_TTL) {
+            return@withContext file.readText(Charsets.UTF_8)
+        }
+        val html = try {
+            fetch(slug)
+        } catch (_: Exception) {
+            return@withContext ""
+        }
+        val summary = HomeParser.parseSummary(html, title)
+        if (summary.isNotEmpty()) {
+            runCatching {
+                file.parentFile?.mkdirs()
+                file.writeText(summary, Charsets.UTF_8)
+            }
+        }
+        summary
+    }
+
+    private suspend fun loadFeatured(force: Boolean): Pair<List<FeaturedItem>, String> {
+        val cached = featuredCache.read("featured")
+        if (!force && cached != null && featuredCache.isFresh(cached.second, FEATURED_TTL)) {
+            return cached.first to "缓存"
+        }
+        return try {
+            val items = HomeParser.parseFeatured(fetch(""))
+            if (items.isEmpty()) {
+                throw IOException("empty featured")
+            }
+            runCatching { featuredCache.write("featured", items) }
+            items to "在线"
+        } catch (_: Exception) {
+            if (cached != null && cached.first.isNotEmpty()) {
+                cached.first to "离线缓存"
+            } else {
+                emptyList<FeaturedItem>() to "离线"
+            }
+        }
+    }
     private fun recommended(daily: DailyPick): List<HomeArticle> {
         val all = DailyPicks.all
         val start = all.indexOfFirst { it.slug == daily.slug }.coerceAtLeast(0)
@@ -175,7 +236,7 @@ class HomeRepository(private val context: Context) {
     private suspend fun fetch(path: String): String {
         RequestRateLimiter.await()
         val request = Request.Builder()
-            .url(ReaderShellBuilder.BASE_URL + path)
+            .url(if (path.startsWith("http")) path else ReaderShellBuilder.BASE_URL + path)
             .header("User-Agent", "SCPArchive/2.4 (Android reader)")
             .header("Accept", "text/html,application/xhtml+xml,application/xml,text/xml")
             .header("Accept-Language", "zh-CN,zh;q=0.9")
@@ -210,8 +271,11 @@ class HomeRepository(private val context: Context) {
         private const val TOP_RATED_PATH =
             "top-rated-pages/pagescp_limit/1/all_range/-/scp_range/others"
         private const val RECENT_PATH = "feed/site-changes.xml"
+        private const val EN_TOP_RATED_URL = "https://scp-wiki.wikidot.com/top-rated-pages"
         private const val TOP_RATED_TTL = 12L * 60L * 60L * 1000L
         private const val RECENT_TTL = 30L * 60L * 1000L
+        private const val FEATURED_TTL = 6L * 60L * 60L * 1000L
+        private const val SUMMARY_TTL = 7L * 24L * 60L * 60L * 1000L
         private val BUNDLED_SERIES = listOf("scp-series", "scp-series-cn")
     }
 }

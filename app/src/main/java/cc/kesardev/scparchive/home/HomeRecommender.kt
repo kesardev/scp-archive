@@ -22,16 +22,24 @@ object HomeRecommender {
         dailySlug: String?,
         excludeSlugs: Set<String>,
         fallback: List<HomeArticle> = emptyList(),
+        scpPool: List<HomeArticle> = emptyList(),
         mode: RecommendMode = RecommendMode.MIXED,
         now: Long = System.currentTimeMillis()
     ): List<HomeArticle> {
         val heatBySlug = heat.associateBy { it.slug }
-        val maxRating = ratingPool.maxOfOrNull { (it.rating ?: 0).coerceAtLeast(1) }
+        val allRated = ratingPool + scpPool
+        val maxRating = allRated.maxOfOrNull { (it.rating ?: 0).coerceAtLeast(1) }
             ?.coerceAtLeast(1) ?: 1
         val maxReads = heat.maxOfOrNull { it.readCount }?.coerceAtLeast(1) ?: 1
 
         val candidates = LinkedHashMap<String, HomeArticle>()
         for (article in ratingPool) {
+            if (article.slug == dailySlug || article.slug in excludeSlugs) {
+                continue
+            }
+            candidates[article.slug] = article
+        }
+        for (article in scpPool) {
             if (article.slug == dailySlug || article.slug in excludeSlugs) {
                 continue
             }
@@ -82,13 +90,15 @@ object HomeRecommender {
                 .thenByDescending { it.article.rating ?: 0 }
         }
 
-        val ranked = ArrayList<HomeArticle>(scored.size + fallback.size)
+        val sorted = ArrayList<HomeArticle>(scored.size)
         val used = HashSet<String>()
         for (item in scored.sortedWith(comparator)) {
             if (used.add(item.article.slug)) {
-                ranked.add(withMeta(item.article, item.heat, mode))
+                sorted.add(withMeta(item.article, item.heat, mode))
             }
         }
+        val ranked = ArrayList<HomeArticle>(sorted.size + fallback.size)
+        ranked.addAll(interleave(sorted))
         for (item in fallback) {
             if (item.slug == dailySlug || item.slug in excludeSlugs || !used.add(item.slug)) {
                 continue
@@ -98,6 +108,38 @@ object HomeRecommender {
         return ranked
     }
 
+    private val MAIN_SERIES = Regex("^scp-\\d+(?:-[a-z0-9]+)*$", RegexOption.IGNORE_CASE)
+
+    /**
+     * Alternates CN originals and main series entries so the home page shows
+     * both halves instead of a single wall of SCP-CN picks.
+     */
+    private fun interleave(ranked: List<HomeArticle>): List<HomeArticle> {
+        if (ranked.isEmpty()) {
+            return ranked
+        }
+        val cn = ranked.filter { it.slug.startsWith("scp-cn-") }
+        val scp = ranked.filter { MAIN_SERIES.matches(it.slug) }
+        if (cn.isEmpty() || scp.isEmpty()) {
+            return ranked
+        }
+        val rest = ranked.filter {
+            !it.slug.startsWith("scp-cn-") && !MAIN_SERIES.matches(it.slug)
+        }
+        val out = ArrayList<HomeArticle>(ranked.size)
+        var index = 0
+        while (index < cn.size || index < scp.size) {
+            if (index < cn.size) {
+                out.add(cn[index])
+            }
+            if (index < scp.size) {
+                out.add(scp[index])
+            }
+            index++
+        }
+        out.addAll(rest)
+        return out
+    }
     /** Takes one batch from a ranked list, wrapping around at the end. */
     fun window(
         ranked: List<HomeArticle>,
@@ -127,6 +169,7 @@ object HomeRecommender {
         limit: Int = DEFAULT_LIMIT,
         mode: RecommendMode = RecommendMode.MIXED,
         batch: Int = 0,
+        scpPool: List<HomeArticle> = emptyList(),
         now: Long = System.currentTimeMillis()
     ): List<HomeArticle> {
         val ranked = rank(
@@ -135,6 +178,7 @@ object HomeRecommender {
             dailySlug = dailySlug,
             excludeSlugs = excludeSlugs,
             fallback = fallback,
+            scpPool = scpPool,
             mode = mode,
             now = now
         )

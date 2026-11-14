@@ -20,8 +20,8 @@ android {
         applicationId = "cc.kesardev.scparchive"
         minSdk = 24
         targetSdk = 35
-        versionCode = 18
-        versionName = "2.13-recommend-modes"
+        versionCode = 20
+        versionName = "2.15-daily-featured"
     }
 
     signingConfigs {
