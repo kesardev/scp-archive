@@ -83,6 +83,9 @@ class CatalogActivity : BaseActivity() {
         }
         viewModel.load(SeriesCatalog.all[startIndex])
         BottomTabs.bind(this, R.id.tab_catalog)
+        if (intent.getBooleanExtra("sync", false)) {
+            viewModel.syncAll()
+        }
     }
 
     override fun onResume() {

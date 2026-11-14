@@ -23,7 +23,6 @@ import cc.kesardev.scparchive.R
 import cc.kesardev.scparchive.catalog.CatalogActivity
 import cc.kesardev.scparchive.catalog.SearchActivity
 import cc.kesardev.scparchive.catalog.SeriesCatalog
-import cc.kesardev.scparchive.library.LibraryActivity
 import cc.kesardev.scparchive.ui.BottomTabs
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
@@ -266,11 +265,14 @@ class HomeActivity : BaseActivity() {
         val actions = listOf(
             Triple(R.drawable.ic_shuffle, "随机") { openRandom() },
             Triple(R.drawable.ic_hash, "编号") { showJumpDialog() },
-            Triple(R.drawable.ic_list, "目录") {
-                startActivity(Intent(this, CatalogActivity::class.java))
+            Triple(R.drawable.ic_search, "搜索") {
+                startActivity(Intent(this, SearchActivity::class.java))
             },
-            Triple(R.drawable.ic_bookmark, "书架") {
-                startActivity(Intent(this, LibraryActivity::class.java))
+            Triple(R.drawable.ic_sync, "同步") {
+                startActivity(
+                    Intent(this, CatalogActivity::class.java)
+                        .putExtra("sync", true)
+                )
             }
         )
         actions.forEachIndexed { index, (icon, label, action) ->
