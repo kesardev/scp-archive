@@ -32,6 +32,7 @@ import cc.kesardev.scparchive.reader.ReaderSettings
 import cc.kesardev.scparchive.reader.ReaderShellBuilder
 import cc.kesardev.scparchive.reader.ReaderTheme
 import cc.kesardev.scparchive.reader.ReaderWebViewClient
+import cc.kesardev.scparchive.reader.InteractiveActivity
 import cc.kesardev.scparchive.settings.AppearancePreferences
 import cc.kesardev.scparchive.settings.SettingsActivity
 import com.google.android.material.appbar.MaterialToolbar
@@ -139,6 +140,7 @@ class MainActivity : BaseActivity() {
         webView.webViewClient = ReaderWebViewClient(
             onInternal = { path -> loadInternal(path) },
             onExternal = { url -> openExternal(url) },
+            onInteractive = { url -> openInteractive(url) },
             pageFinished = { view, url ->
                 if (url != "about:blank") {
                     applySettings(preferences.load())
@@ -232,6 +234,11 @@ class MainActivity : BaseActivity() {
                 true
             }
 
+            R.id.action_open_browser -> {
+                openExternal(ReaderShellBuilder.BASE_URL + currentSlug.trim('/'))
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -275,6 +282,13 @@ class MainActivity : BaseActivity() {
                     append(state.stats.tables)
                     append(" · 脚注 ")
                     append(state.stats.footnotes)
+                    val interactive = state.stats.htmlBlocks + state.stats.externalEmbeds
+                    if (interactive > 0) {
+                        append(" · 互动 ")
+                        append(interactive)
+                    } else if (state.stats.interactiveControls > 0) {
+                        append(" · 互动")
+                    }
                     append(" · ")
                     append(state.source)
                 }
@@ -470,6 +484,14 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun openInteractive(url: String) {
+        startActivity(
+            Intent(this, InteractiveActivity::class.java)
+                .putExtra("url", url)
+                .putExtra("title", currentTitle)
+        )
+    }
+
     inner class Bridge {
         @JavascriptInterface
         fun postMessage(message: String) {
@@ -514,7 +536,18 @@ class MainActivity : BaseActivity() {
                     "openInternal" -> {
                         val path = json.optString("path")
                         if (path.isNotBlank()) {
-                            loadInternal(path)
+                            if (path.contains("/html/")) {
+                                openInteractive(ReaderShellBuilder.BASE_URL + path.trim('/'))
+                            } else {
+                                loadInternal(path)
+                            }
+                        }
+                    }
+
+                    "openInteractive" -> {
+                        val url = json.optString("url")
+                        if (url.isNotBlank()) {
+                            openInteractive(url)
                         }
                     }
 
