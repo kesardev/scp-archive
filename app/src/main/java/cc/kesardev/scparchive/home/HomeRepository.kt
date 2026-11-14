@@ -55,7 +55,7 @@ class HomeRepository(private val context: Context) {
             recommended = recommended(pick),
             heat = buildHeat(history, favorites),
             continueReading = history
-                .filter { it.progress < 0.98f && !it.slug.contains("/html/", ignoreCase = true) }
+                .filter { it.progress < 1f && !it.slug.contains("/html/", ignoreCase = true) }
                 .take(6)
                 .map { toArticle(it, withProgress = true) },
             catalogCount = catalogCount,

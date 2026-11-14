@@ -41,7 +41,6 @@ class HomeActivity : BaseActivity() {
     private lateinit var randomTitle: TextView
     private lateinit var randomMeta: TextView
     private lateinit var randomShuffle: TextView
-    private lateinit var sectionContinue: View
     private lateinit var continueRow: LinearLayout
     private lateinit var sectionFeatured: View
     private lateinit var featuredList: LinearLayout
@@ -77,7 +76,6 @@ class HomeActivity : BaseActivity() {
         randomTitle = findViewById(R.id.random_title)
         randomMeta = findViewById(R.id.random_meta)
         randomShuffle = findViewById(R.id.random_shuffle)
-        sectionContinue = findViewById(R.id.section_continue)
         continueRow = findViewById(R.id.continue_row)
         sectionFeatured = findViewById(R.id.section_featured)
         featuredList = findViewById(R.id.featured_list)
@@ -189,8 +187,6 @@ class HomeActivity : BaseActivity() {
             )
         }
 
-        sectionContinue.visibility =
-            if (value.continueReading.isEmpty()) View.GONE else View.VISIBLE
         continueRow.removeAllViews()
         for (article in value.continueReading) {
             addArticleCard(continueRow, article, "继续阅读", showProgress = true)
