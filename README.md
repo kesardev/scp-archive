@@ -18,8 +18,6 @@
 
 ## 下载与安装
 
-项目暂未提供正式 Release，可直接从源码构建。
-
 - 包名：cc.kesardev.scparchive
 - 最低版本：Android 7.0（API 24）
 - APK 输出：app/build/outputs/apk/debug/app-debug.apk
