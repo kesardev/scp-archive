@@ -54,6 +54,8 @@
 
 构建结果位于 app/build/outputs/apk/debug/app-debug.apk。
 
+推送 `v*` 标签或在 Actions 里手动运行 `Android build`，会自动跑单元测试并产出 debug APK，作为构建产物上传；打标签时还会把 APK 附到对应的 release。
+
 ## 数据与权限
 
 应用仅申请 INTERNET 权限，用于加载 Wiki 页面、目录、图片和可选的代理请求。收藏、阅读历史、阅读进度和缓存均保存在设备本地，不包含账号系统，也不会上传到服务器。
