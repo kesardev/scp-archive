@@ -1,0 +1,390 @@
+/* Reader layer: keep the page's own CSS, only fix layout for a phone-width reading column. */
+:root {
+  --reader-font-size: 17px;
+  --reader-line-height: 1.75;
+  --reader-bg: #ffffff;
+  --reader-fg: #1a1a1a;
+  --reader-muted: #666666;
+  --reader-accent: #8b0000;
+  --reader-border: #dddddd;
+  --reader-surface: #ffffff;
+  --reader-surface-2: #f5f5f5;
+}
+
+html, body {
+  background: var(--reader-bg) !important;
+}
+
+body#html-body {
+  margin: 0;
+  padding: 0;
+  color: var(--reader-fg);
+}
+
+#skrollr-body {
+  position: static !important;
+}
+
+.container-wrap-wrap,
+.container-wrap,
+.container {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#content-wrap {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#main-content {
+  width: auto !important;
+  max-width: 760px !important;
+  margin: 0 auto !important;
+  padding: 16px 16px 56px !important;
+  box-sizing: border-box;
+}
+
+#page-title {
+  margin: 0 0 16px;
+  font-size: 1.55em;
+  line-height: 1.3;
+}
+
+#page-content {
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+#page-content p {
+  margin: 0 0 1em;
+}
+
+#page-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+#page-content .scp-image-block {
+  float: none !important;
+  max-width: 100% !important;
+  margin: 1em auto !important;
+}
+
+#page-content .scp-image-block img {
+  display: block;
+  margin: 0 auto;
+}
+
+#page-content .scp-image-block .scp-image-caption {
+  margin-top: 6px;
+  color: var(--reader-muted);
+  font-size: 0.85em;
+  text-align: center;
+}
+
+#page-content pre,
+#page-content code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#page-content blockquote {
+  margin: 1em 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid #d0d0d0;
+}
+
+#page-content table {
+  max-width: 100%;
+}
+
+.reader-table-wrap {
+  margin: 1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reader-table-wrap table {
+  margin: 0;
+}
+
+#page-content .footnotes-footer {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid #dddddd;
+  font-size: 0.9em;
+}
+
+#page-content .footnote-footer {
+  margin-bottom: 0.6em;
+}
+
+#page-content sup.footnoteref a {
+  text-decoration: none;
+}
+
+.reader-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10001;
+  width: 0;
+  height: 3px;
+  background: var(--reader-accent);
+}
+
+.reader-footnote-pop {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 9999;
+  max-height: 45vh;
+  overflow: auto;
+  padding: 14px 16px;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #222222;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.reader-pop-title {
+  margin-bottom: 6px;
+  color: var(--reader-accent);
+  font-weight: 600;
+}
+
+.reader-pop-close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: #888888;
+  font-size: 20px;
+}
+
+.reader-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.92);
+}
+
+.reader-lightbox img {
+  max-width: 96vw;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+.reader-lightbox-cap {
+  margin-top: 12px;
+  color: #eeeeee;
+  font-size: 14px;
+  text-align: center;
+}
+
+.reader-lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 28px;
+}
+
+body.reader-dark {
+  --reader-bg: #121212;
+  --reader-fg: #e6e6e6;
+  --reader-muted: #a0a0a0;
+  --reader-border: #333333;
+  --reader-surface: #1e1e1e;
+  --reader-surface-2: #262626;
+  color-scheme: dark;
+}
+
+body.reader-dark #page-content {
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content a {
+  color: #9ecbff;
+}
+
+body.reader-dark .reader-footnote-pop {
+  border-color: #333333;
+  background: #1e1e1e;
+  color: #e6e6e6;
+}
+
+#page-content .creditRate {
+  margin: 0 0 16px;
+}
+
+#page-content .creditRate .rate-points {
+  font-weight: 600;
+}
+
+#page-content .creditRate a {
+  cursor: default;
+  text-decoration: none;
+}
+
+body.reader-hide-images #page-content img {
+  display: none !important;
+}
+
+.reader-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10002;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 40px;
+}
+
+.reader-lightbox-prev {
+  left: 12px;
+}
+
+.reader-lightbox-next {
+  right: 12px;
+}
+
+.reader-lightbox-counter {
+  margin-top: 8px;
+  color: #cccccc;
+  font-size: 13px;
+}
+
+/* Dark mode: keep the page structure, replace the light surfaces and text. */
+body.reader-dark #page-title,
+body.reader-dark #page-content {
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content a {
+  color: #9ecbff;
+}
+
+body.reader-dark #page-content a:visited {
+  color: #c3a6ff;
+}
+
+body.reader-dark #page-content blockquote,
+body.reader-dark #page-content .blockquote {
+  border-left-color: #444444;
+  background: transparent;
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content hr {
+  border-color: var(--reader-border);
+  background-color: var(--reader-border);
+}
+
+body.reader-dark #page-content .footnotes-footer {
+  border-top-color: var(--reader-border);
+}
+
+body.reader-dark #page-content table,
+body.reader-dark #page-content th,
+body.reader-dark #page-content td {
+  border-color: #3a3a3a;
+}
+
+body.reader-dark #page-content pre,
+body.reader-dark #page-content code {
+  background: var(--reader-surface-2);
+  border: 1px solid var(--reader-border);
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content .page-rate-widget-box,
+body.reader-dark #page-content .rate-box-with-credit-button,
+body.reader-dark #page-content .creditRate,
+body.reader-dark #page-content .creditBottomRate {
+  background-color: var(--reader-surface) !important;
+  background-image: none !important;
+  border-color: var(--reader-border) !important;
+  color: var(--reader-fg) !important;
+}
+
+body.reader-dark #page-content .page-rate-widget-box *,
+body.reader-dark #page-content .rate-box-with-credit-button *,
+body.reader-dark #page-content .creditRate * {
+  color: var(--reader-fg) !important;
+}
+
+body.reader-dark #page-content .yui-navset,
+body.reader-dark #page-content .yui-nav,
+body.reader-dark #page-content .yui-content,
+body.reader-dark #page-content .collapsible-block-folded,
+body.reader-dark #page-content .collapsible-block-unfolded-link,
+body.reader-dark #page-content .collapsible-block-content {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content .yui-nav li a {
+  background: transparent !important;
+  color: var(--reader-muted);
+}
+
+body.reader-dark #page-content .yui-nav li.selected a {
+  color: var(--reader-fg);
+  border-bottom: 2px solid var(--reader-accent);
+}
+
+body.reader-dark #page-content .btn,
+body.reader-dark #page-content .btn-default,
+body.reader-dark #page-content .collapsible-block-link {
+  background-color: var(--reader-surface-2) !important;
+  border-color: var(--reader-border) !important;
+  color: var(--reader-fg) !important;
+}
+
+body.reader-dark #page-content .modalcontainer {
+  background-color: rgba(0, 0, 0, 0.72) !important;
+}
+
+body.reader-dark #page-content .modalbox {
+  background-color: var(--reader-surface) !important;
+  border: 1px solid var(--reader-border);
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content .credit,
+body.reader-dark #page-content .credit-back,
+body.reader-dark #page-content .printuser,
+body.reader-dark #page-content .avatarhover,
+body.reader-dark #page-content .title {
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content .scp-image-block .scp-image-caption {
+  color: var(--reader-muted);
+}

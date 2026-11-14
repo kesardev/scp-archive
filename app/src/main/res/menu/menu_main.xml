@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:title="搜索"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_catalog"
+        android:title="系列目录"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_pages"
+        android:title="页面"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/page_173"
+                android:title="@string/page_173" />
+            <item
+                android:id="@+id/page_5000"
+                android:title="@string/page_5000" />
+            <item
+                android:id="@+id/page_cn1000"
+                android:title="@string/page_cn1000" />
+            <item
+                android:id="@+id/page_3029"
+                android:title="@string/page_3029" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_favorite"
+        android:icon="@drawable/ic_star_off"
+        android:title="收藏"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_library"
+        android:title="书架"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_toc"
+        android:title="目录"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Aa"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_find"
+        android:title="页内查找"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_appearance"
+        android:title="外观设置"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_reload"
+        android:title="@string/reload"
+        app:showAsAction="never" />
+
+</menu>

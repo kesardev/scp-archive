@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SCP 档案库</string>
+    <string name="page_173">SCP-173</string>
+    <string name="page_5000">SCP-5000</string>
+    <string name="page_cn1000">CN-1000</string>
+    <string name="page_3029">3029</string>
+    <string name="reload">重载</string>
+</resources>

@@ -1,0 +1,58 @@
+[
+  {
+    "slug": "scp-173",
+    "title": "SCP-173",
+    "styles": 3,
+    "images": 1,
+    "tables": 0,
+    "blockquotes": 0,
+    "footnotes": 0,
+    "headings": 0,
+    "tabsets": 0,
+    "collapsibles": 0,
+    "onclick_left": 0,
+    "javascript_links_left": 0
+  },
+  {
+    "slug": "scp-5000",
+    "title": "SCP-5000",
+    "styles": 4,
+    "images": 3,
+    "tables": 6,
+    "blockquotes": 25,
+    "footnotes": 5,
+    "headings": 1,
+    "tabsets": 0,
+    "collapsibles": 0,
+    "onclick_left": 0,
+    "javascript_links_left": 0
+  },
+  {
+    "slug": "scp-cn-1000",
+    "title": "SCP-CN-1000",
+    "styles": 5,
+    "images": 3,
+    "tables": 0,
+    "blockquotes": 1,
+    "footnotes": 0,
+    "headings": 3,
+    "tabsets": 1,
+    "collapsibles": 0,
+    "onclick_left": 0,
+    "javascript_links_left": 0
+  },
+  {
+    "slug": "scp-3029",
+    "title": "SCP-3029",
+    "styles": 3,
+    "images": 3,
+    "tables": 1,
+    "blockquotes": 5,
+    "footnotes": 3,
+    "headings": 0,
+    "tabsets": 0,
+    "collapsibles": 1,
+    "onclick_left": 0,
+    "javascript_links_left": 0
+  }
+]

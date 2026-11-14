@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer">
+<base href="https://scp-wiki-cn.wikidot.com/">
+<style>
+/* modules */
+        
+                
+        /* theme */
+                    @import url(https://d3g0gp89917ko0.cloudfront.net/v--1e049c54eb7c/common--theme/base/css/style.css);
+                    @import url(https://sigma9.scpwikicn.com/cn/cn/sigma9_ch.min.css);
+</style>
+<style>
+/* 牢亮消失術 */
+
+a[href*="user:info/adminbright"] {
+  font-size: 0;
+}
+
+a[href*="user:info/adminbright"]::before {
+    content: 'TheDuckMan';
+    font-size: .95rem;
+}
+
+a[href*="user:info/adminbright"]:nth-child(1) img {
+  display: none
+}
+
+a[href*="user:info/adminbright"]:nth-child(1)::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-image: url(https://www.wikidot.com/avatar.php?userid=1522769&amp;amp;size=small&amp;amp;timestamp=1769563918), url(https://www.wikidot.com/userkarma.php?u=634139);
+  display: inline-block;
+  background-size: contain;
+  vertical-align: -0.3em;
+  padding: 1px 9px 1px 8px;
+  background-repeat: no-repeat;
+  background-position-x: 9px, 0;
+}
+</style>
+<style>
+.alt-block-0 {
+ display:none;
+}
+
+.alt-block {
+ color: black;
+ border: solid 1px #000000;
+ background:#f2f2c2;
+ padding:5px;
+ margin-bottom: 10px;
+}
+</style>
+<style>
+/* Reader layer: keep the page's own CSS, only fix layout for a phone-width reading column. */
+:root {
+  --reader-font-size: 17px;
+  --reader-line-height: 1.75;
+  --reader-bg: #ffffff;
+  --reader-fg: #1a1a1a;
+  --reader-muted: #666666;
+  --reader-accent: #8b0000;
+}
+
+html, body {
+  background: var(--reader-bg) !important;
+}
+
+body#html-body {
+  margin: 0;
+  padding: 0;
+  color: var(--reader-fg);
+}
+
+#skrollr-body {
+  position: static !important;
+}
+
+.container-wrap-wrap,
+.container-wrap,
+.container {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#content-wrap {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#main-content {
+  width: auto !important;
+  max-width: 760px !important;
+  margin: 0 auto !important;
+  padding: 16px 16px 56px !important;
+  box-sizing: border-box;
+}
+
+#page-title {
+  margin: 0 0 16px;
+  font-size: 1.55em;
+  line-height: 1.3;
+}
+
+#page-content {
+  font-size: var(--reader-font-size);
+  line-height: var(--reader-line-height);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+#page-content p {
+  margin: 0 0 1em;
+}
+
+#page-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+#page-content .scp-image-block {
+  float: none !important;
+  max-width: 100% !important;
+  margin: 1em auto !important;
+}
+
+#page-content .scp-image-block img {
+  display: block;
+  margin: 0 auto;
+}
+
+#page-content .scp-image-block .scp-image-caption {
+  margin-top: 6px;
+  color: var(--reader-muted);
+  font-size: 0.85em;
+  text-align: center;
+}
+
+#page-content pre,
+#page-content code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#page-content blockquote {
+  margin: 1em 0;
+  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid #d0d0d0;
+}
+
+#page-content table {
+  max-width: 100%;
+}
+
+.reader-table-wrap {
+  margin: 1em 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reader-table-wrap table {
+  margin: 0;
+}
+
+#page-content .footnotes-footer {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid #dddddd;
+  font-size: 0.9em;
+}
+
+#page-content .footnote-footer {
+  margin-bottom: 0.6em;
+}
+
+#page-content sup.footnoteref a {
+  text-decoration: none;
+}
+
+.reader-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10001;
+  width: 0;
+  height: 3px;
+  background: var(--reader-accent);
+}
+
+.reader-footnote-pop {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 9999;
+  max-height: 45vh;
+  overflow: auto;
+  padding: 14px 16px;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #222222;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.reader-pop-title {
+  margin-bottom: 6px;
+  color: var(--reader-accent);
+  font-weight: 600;
+}
+
+.reader-pop-close {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: #888888;
+  font-size: 20px;
+}
+
+.reader-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.92);
+}
+
+.reader-lightbox img {
+  max-width: 96vw;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+.reader-lightbox-cap {
+  margin-top: 12px;
+  color: #eeeeee;
+  font-size: 14px;
+  text-align: center;
+}
+
+.reader-lightbox-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 28px;
+}
+
+body.reader-dark {
+  --reader-bg: #121212;
+  --reader-fg: #e6e6e6;
+  --reader-muted: #a0a0a0;
+}
+
+body.reader-dark #page-content {
+  color: var(--reader-fg);
+}
+
+body.reader-dark #page-content a {
+  color: #9ecbff;
+}
+
+body.reader-dark .reader-footnote-pop {
+  border-color: #333333;
+  background: #1e1e1e;
+  color: #e6e6e6;
+}
+
+</style>
+<title>VALIDATION {"viewport":"504x2504","documentWidth":504,"horizontalOverflow":0,"styleSheets":4,"pageContent":{"width":472,"height":1340,"display":"block","fontSize":"17px","lineHeight":"29.75px","float":"none","color":"rgb(26, 26, 26)"},"pageTitle":{"width":472,"height":32,"display":"block","fontSize":"19.84px","lineHeight":"25.792px","float":"none","color":"rgb(153, 0, 17)"},"mainContent":{"width":504,"height":1478,"display":"block","fontSize":"12.8px","lineHeight":"normal","float":"none","color":"rgb(26, 26, 26)"},"imageBlock":{"width":302,"height":293,"display":"block","fontSize":"17px","lineHeight":"29.75px","float":"none","color":"rgb(26, 26, 26)"},"images":[{"src":"https://05command-cn.wdfiles.com/local--files/staff%3Aimageuploadpage/SCP-173.jpg","naturalWidth":1200,"naturalHeight":981,"renderedWidth":300,"complete":true}],"tables":[],"blockquotes":0,"footnotes":0,"footnoteRefs":0,"headings":0,"tabSets":0,"textLength":868,"lightbox":{"visible":true,"hasImage":true}}</title></head>
+<body id="html-body" class="reader-body">
+<div id="skrollr-body">
+  <div class="container-wrap-wrap">
+    <div class="container-wrap">
+      <div class="container">
+        <div id="content-wrap">
+          <div id="main-content">
+            <div id="page-title">SCP-173</div>
+            <div id="page-content">
+                        
+
+
+
+<div class="list-pages-box" data-lp-id="lp-5fb641deb7ebb12995ce8e1b" data-lp-key="p" data-lp-page="24203721" data-lp-route="scp-173" data-lp-generation="a28928f39d234c7ba76f046670509808fe288bab2220a77040786390fb549cc7">    
+    
+    
+    
+    </div>
+<div class="scp-image-block block-right" style="width:300px;"><img src="https://05command-cn.wdfiles.com/local--files/staff%3Aimageuploadpage/SCP-173.jpg" alt="SCP-173.jpg" class="image" loading="lazy" decoding="async" style="cursor: zoom-in;">
+<div class="scp-image-caption">
+<p>收容中的SCP-173</p>
+</div>
+</div>
+<p><strong>项目编号：</strong>SCP-173</p>
+<p><strong>项目等级：</strong>Euclid</p>
+<p><strong>特殊收容措施：</strong>项目SCP-173应始终保管于一个上锁的收容间内。当必须进入SCP-173的收容间时，人员数目不论何时都不得少于三人且须将门重新上锁。至少须有两人全程与SCP-173保持眼神接触，直到所有人员都离开收容间并重新上锁为止。</p>
+<p><strong>描述：</strong>于1993年移动到Site-19。起源至今未知。它由混凝土和钢筋建造，并有Krylon牌喷漆的痕迹。SCP-173会移动且具有高度敌意。该物体在直接视线内无法移动。与SCP-173之间的视线时刻都不得中断。派往收容间的人员要在眨眼前相互提醒。据报告该物体的攻击方式为折断头骨底处的颈部，或是勒颈。在一起攻击事件中，人员应遵守4级危险物体收容措施。</p>
+<p>人事报告称，当收容间内无人存在时，其中会传出刮石的声音。这被认为是正常现象，并且该行为所发生的任何改变都应当向值班中的代理HMCL监督员报告。</p>
+<p>地板上的红棕色物质为粪便和血液的混合物。这些物料的来源未知。内部环境须每两周清洁一次。</p>
+<hr>
+<p><strong><span style="text-decoration: underline;">创作者信息</span></strong></p>
+<p><sup>SCP-173中所使用的图像为<a href="http://izumikato.com/#Untitled-2004">加藤泉</a>所创作的艺术作品《无题 2004》。该照片由<a href="http://www.scaithebathhouse.com/en/exhibitions/2005/04/izumi_kato/">山本桂輔</a>所摄。原作者保留所有权利。</sup></p>
+<p><sup>提醒：SCP-173是对由<a href="http://izumikato.com/#Untitled-2004">加藤泉</a>所创作的艺术作品《无题 2004》的二次使用。SCP-173的概念与该艺术家的《无题 2004》的原始概念没有任何关系。</sup></p>
+<p><sup>该雕塑，及其外形、照片都不适用于任何知识共享许可。仅有该文章的文本部分适用于知识共享。<strong>任何情况下都不得将该雕塑及其外形基于商业目的使用。加藤泉已慷慨地允许SCP基金会及其爱好者团体基于非商业目的使用《无题 2004》的图像。</strong></sup></p>
+<p><sup><strong>1. 不要与加藤泉先生就有关“SCP-173”的任何事项进行咨询或协商。</strong></sup></p>
+<p><sup><strong>2. 不要要求任何“对SCP-173图像的商用许可”。</strong></sup></p>
+<p><sup><strong>3. 不要要求SCP基金会社群就《无题 2004》的商用许可与加藤泉先生进行协商。</strong></sup></p>
+<p><sup><strong>4. 不得使用《无题 2004》开展任何与“SCP-173”相关的商业活动。没有任何例外。</strong></sup></p>
+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+window.Reader = window.Reader || { postMessage: function (message) { try { console.log(message); } catch (e) {} } };
+</script>
+<script>
+/* Reader interactions. Page scripts are stripped; everything here is ours. */
+(function () {
+  'use strict';
+
+  function post(type, payload) {
+    var message = { type: type };
+    if (payload) {
+      for (var key in payload) {
+        if (Object.prototype.hasOwnProperty.call(payload, key)) {
+          message[key] = payload[key];
+        }
+      }
+    }
+    try {
+      if (window.Reader && window.Reader.postMessage) {
+        window.Reader.postMessage(JSON.stringify(message));
+      }
+    } catch (error) {
+      /* preview mode has no native bridge */
+    }
+  }
+
+  function closest(node, selector) {
+    while (node && node.nodeType === 1) {
+      if (node.matches && node.matches(selector)) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function wrapTables() {
+    var tables = document.querySelectorAll('#page-content table');
+    for (var i = 0; i < tables.length; i++) {
+      var table = tables[i];
+      if (closest(table.parentNode, '.reader-table-wrap')) {
+        continue;
+      }
+      var wrap = document.createElement('div');
+      wrap.className = 'reader-table-wrap';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    }
+  }
+
+  function initTabs() {
+    var sets = document.querySelectorAll('.yui-navset');
+    for (var i = 0; i < sets.length; i++) {
+      (function (set) {
+        var nav = set.querySelector('ul.yui-nav');
+        var content = set.querySelector('.yui-content');
+        if (!nav || !content) {
+          return;
+        }
+        var tabs = nav.querySelectorAll('li');
+        var panes = [];
+        for (var p = 0; p < content.children.length; p++) {
+          if (content.children[p].tagName === 'DIV') {
+            panes.push(content.children[p]);
+          }
+        }
+        if (tabs.length === 0 || panes.length === 0) {
+          return;
+        }
+        function show(index) {
+          for (var t = 0; t < tabs.length; t++) {
+            if (t === index) {
+              tabs[t].className = tabs[t].className.replace(/\s*selected/g, '') + ' selected';
+            } else {
+              tabs[t].className = tabs[t].className.replace(/\s*selected/g, '');
+            }
+          }
+          for (var q = 0; q < panes.length; q++) {
+            panes[q].style.display = q === index ? '' : 'none';
+          }
+        }
+        for (var t = 0; t < tabs.length; t++) {
+          (function (index) {
+            tabs[index].addEventListener('click', function (event) {
+              event.preventDefault();
+              show(index);
+            });
+          })(t);
+        }
+        show(0);
+      })(sets[i]);
+    }
+  }
+
+  function initCollapsibles() {
+    var blocks = document.querySelectorAll('.collapsible-block');
+    for (var i = 0; i < blocks.length; i++) {
+      (function (block) {
+        var folded = block.querySelector('.collapsible-block-folded');
+        var unfolded = block.querySelector('.collapsible-block-unfolded');
+        if (!unfolded) {
+          return;
+        }
+        unfolded.style.display = 'none';
+        if (folded) {
+          folded.style.display = '';
+          folded.addEventListener('click', function (event) {
+            event.preventDefault();
+            unfolded.style.display = 'block';
+            folded.style.display = 'none';
+          });
+        }
+        var closeLink = block.querySelector('.collapsible-block-unfolded-link');
+        if (closeLink) {
+          closeLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            unfolded.style.display = 'none';
+            if (folded) {
+              folded.style.display = '';
+            }
+          });
+        }
+      })(blocks[i]);
+    }
+  }
+
+  function footnoteNumber(link) {
+    var id = link.id || '';
+    if (id.indexOf('footnoteref-') === 0) {
+      return id.substring('footnoteref-'.length);
+    }
+    var href = link.getAttribute('href') || '';
+    var match = href.match(/footnote-([0-9]+)/);
+    return match ? match[1] : '';
+  }
+
+  function closeFootnotePop() {
+    var existing = document.querySelector('.reader-footnote-pop');
+    if (existing) {
+      existing.parentNode.removeChild(existing);
+    }
+  }
+
+  function showFootnote(number) {
+    var source = document.getElementById('footnote-' + number);
+    if (!source) {
+      return;
+    }
+    closeFootnotePop();
+    var pop = document.createElement('div');
+    pop.className = 'reader-footnote-pop';
+
+    var title = document.createElement('div');
+    title.className = 'reader-pop-title';
+    title.textContent = '脚注 ' + number;
+    pop.appendChild(title);
+
+    var close = document.createElement('button');
+    close.className = 'reader-pop-close';
+    close.type = 'button';
+    close.textContent = '×';
+    close.addEventListener('click', closeFootnotePop);
+    pop.appendChild(close);
+
+    var body = document.createElement('div');
+    var clone = source.cloneNode(true);
+    var numberLink = clone.querySelector('a');
+    if (numberLink) {
+      numberLink.parentNode.removeChild(numberLink);
+    }
+    body.innerHTML = clone.innerHTML;
+    pop.appendChild(body);
+
+    document.body.appendChild(pop);
+  }
+
+  function initFootnotes() {
+    var refs = document.querySelectorAll('sup.footnoteref a, a.footnoteref');
+    for (var i = 0; i < refs.length; i++) {
+      (function (link) {
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          var number = footnoteNumber(link);
+          if (number) {
+            showFootnote(number);
+          }
+        });
+      })(refs[i]);
+    }
+  }
+
+  function initImages() {
+    var images = document.querySelectorAll('#page-content img');
+    for (var i = 0; i < images.length; i++) {
+      (function (image) {
+        image.style.cursor = 'zoom-in';
+        image.addEventListener('click', function (event) {
+          event.preventDefault();
+          var src = image.currentSrc || image.src;
+          if (!src) {
+            return;
+          }
+          var caption = '';
+          var block = closest(image, '.scp-image-block');
+          if (block) {
+            var captionNode = block.querySelector('.scp-image-caption');
+            if (captionNode) {
+              caption = captionNode.textContent.trim();
+            }
+          }
+          var box = document.createElement('div');
+          box.className = 'reader-lightbox';
+          var close = document.createElement('button');
+          close.className = 'reader-lightbox-close';
+          close.type = 'button';
+          close.textContent = '×';
+          box.appendChild(close);
+          var full = document.createElement('img');
+          full.src = src;
+          full.alt = image.alt || '';
+          box.appendChild(full);
+          if (caption) {
+            var cap = document.createElement('div');
+            cap.className = 'reader-lightbox-cap';
+            cap.textContent = caption;
+            box.appendChild(cap);
+          }
+          function closeBox() {
+            if (box.parentNode) {
+              box.parentNode.removeChild(box);
+            }
+          }
+          close.addEventListener('click', closeBox);
+          box.addEventListener('click', function (clickEvent) {
+            if (clickEvent.target === box) {
+              closeBox();
+            }
+          });
+          document.body.appendChild(box);
+        });
+      })(images[i]);
+    }
+  }
+
+  function initToc() {
+    var heads = document.querySelectorAll('#page-content h1, #page-content h2, #page-content h3');
+    var items = [];
+    for (var i = 0; i < heads.length; i++) {
+      var head = heads[i];
+      var text = head.textContent.replace(/\s+/g, ' ').trim();
+      if (!text) {
+        continue;
+      }
+      if (!head.id) {
+        head.id = 'reader-heading-' + i;
+      }
+      items.push({
+        id: head.id,
+        text: text,
+        level: parseInt(head.tagName.substring(1), 10)
+      });
+    }
+    if (items.length > 0) {
+      post('toc', { items: items });
+    }
+  }
+
+  function initProgress() {
+    var bar = document.createElement('div');
+    bar.className = 'reader-progress';
+    document.body.appendChild(bar);
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var height = document.documentElement.scrollHeight - window.innerHeight;
+      var value = height <= 0 ? 0 : Math.min(100, Math.max(0, (window.scrollY / height) * 100));
+      bar.style.width = value + '%';
+      post('progress', { value: Math.round(value) });
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    }, { passive: true });
+    update();
+  }
+
+  function initLinks() {
+    document.addEventListener('click', function (event) {
+      var link = closest(event.target, 'a');
+      if (!link) {
+        return;
+      }
+      var href = link.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '#') {
+        return;
+      }
+      if (href.indexOf('javascript:') === 0) {
+        event.preventDefault();
+        return;
+      }
+      var absolute;
+      try {
+        absolute = new URL(href, document.baseURI);
+      } catch (error) {
+        return;
+      }
+      event.preventDefault();
+      var host = absolute.hostname.toLowerCase();
+      if (host === 'scp-wiki-cn.wikidot.com' || host === 'scp-wiki.wikidot.com') {
+        post('openInternal', { path: absolute.pathname.replace(/^\//, '') + absolute.search });
+      } else {
+        post('openExternal', { url: absolute.href });
+      }
+    });
+  }
+
+  function fixAvatars() {
+    var images = document.querySelectorAll('img[src*="avatar.php"]');
+    for (var i = 0; i < images.length; i++) {
+      var src = images[i].getAttribute('src') || '';
+      if (src.indexOf('&amp;') >= 0) {
+        images[i].setAttribute('src', src.replace(/&amp;/g, '&'));
+      }
+    }
+  }
+
+  function init() {
+    wrapTables();
+    initTabs();
+    initCollapsibles();
+    initFootnotes();
+    initImages();
+    initToc();
+    initProgress();
+    initLinks();
+    fixAvatars();
+    window.__readerReady = true;
+    post('ready', { title: document.title });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+/* Preview-only validation: reads the rendered DOM and reports measurable facts. */
+(function () {
+  'use strict';
+
+  function rectOf(selector) {
+    var el = document.querySelector(selector);
+    if (!el) {
+      return null;
+    }
+    var rect = el.getBoundingClientRect();
+    var style = getComputedStyle(el);
+    return {
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      display: style.display,
+      fontSize: style.fontSize,
+      lineHeight: style.lineHeight,
+      float: style.float,
+      color: style.color
+    };
+  }
+
+  function run() {
+    var images = [];
+    var imageNodes = document.querySelectorAll('#page-content img');
+    for (var i = 0; i < imageNodes.length; i++) {
+      var image = imageNodes[i];
+      var imageRect = image.getBoundingClientRect();
+      images.push({
+        src: (image.currentSrc || image.src || '').substring(0, 120),
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+        renderedWidth: Math.round(imageRect.width),
+        complete: image.complete
+      });
+    }
+
+    var tables = [];
+    var tableNodes = document.querySelectorAll('#page-content table');
+    for (var t = 0; t < tableNodes.length; t++) {
+      var table = tableNodes[t];
+      var wrap = table.closest('.reader-table-wrap');
+      tables.push({
+        width: Math.round(table.getBoundingClientRect().width),
+        wrapWidth: wrap ? Math.round(wrap.getBoundingClientRect().width) : 0,
+        scrollWidth: wrap ? wrap.scrollWidth : 0
+      });
+    }
+
+    var result = {
+      viewport: window.innerWidth + 'x' + window.innerHeight,
+      documentWidth: document.documentElement.scrollWidth,
+      horizontalOverflow: document.documentElement.scrollWidth - window.innerWidth,
+      styleSheets: document.styleSheets.length,
+      pageContent: rectOf('#page-content'),
+      pageTitle: rectOf('#page-title'),
+      mainContent: rectOf('#main-content'),
+      imageBlock: rectOf('.scp-image-block'),
+      images: images,
+      tables: tables,
+      blockquotes: document.querySelectorAll('#page-content blockquote').length,
+      footnotes: document.querySelectorAll('#page-content .footnote-footer').length,
+      footnoteRefs: document.querySelectorAll('sup.footnoteref a, a.footnoteref').length,
+      headings: document.querySelectorAll('#page-content h1, #page-content h2, #page-content h3').length,
+      tabSets: document.querySelectorAll('.yui-navset').length,
+      textLength: (document.querySelector('#page-content').innerText || '').length
+    };
+
+    var ref = document.querySelector('sup.footnoteref a, a.footnoteref');
+    if (ref) {
+      ref.click();
+      var pop = document.querySelector('.reader-footnote-pop');
+      result.footnotePopover = pop ? {
+        visible: pop.getBoundingClientRect().height > 0,
+        text: (pop.innerText || '').substring(0, 80)
+      } : null;
+      var close = document.querySelector('.reader-pop-close');
+      if (close) {
+        close.click();
+      }
+    }
+
+    var image = document.querySelector('#page-content img');
+    if (image) {
+      image.click();
+      var box = document.querySelector('.reader-lightbox');
+      result.lightbox = box ? {
+        visible: box.getBoundingClientRect().height > 0,
+        hasImage: !!box.querySelector('img')
+      } : null;
+      var lightClose = document.querySelector('.reader-lightbox-close');
+      if (lightClose) {
+        lightClose.click();
+      }
+    }
+
+    var pre = document.createElement('pre');
+    pre.id = 'reader-validation';
+    pre.textContent = JSON.stringify(result);
+    document.body.appendChild(pre);
+    document.title = 'VALIDATION ' + JSON.stringify(result);
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(run, 1200);
+  } else {
+    window.addEventListener('load', function () {
+      setTimeout(run, 1200);
+    });
+  }
+})();
+
+</script>
+
+
+<div class="reader-progress" style="width: 0%;"></div><pre id="reader-validation">{"viewport":"504x2504","documentWidth":504,"horizontalOverflow":0,"styleSheets":4,"pageContent":{"width":472,"height":1340,"display":"block","fontSize":"17px","lineHeight":"29.75px","float":"none","color":"rgb(26, 26, 26)"},"pageTitle":{"width":472,"height":32,"display":"block","fontSize":"19.84px","lineHeight":"25.792px","float":"none","color":"rgb(153, 0, 17)"},"mainContent":{"width":504,"height":1478,"display":"block","fontSize":"12.8px","lineHeight":"normal","float":"none","color":"rgb(26, 26, 26)"},"imageBlock":{"width":302,"height":293,"display":"block","fontSize":"17px","lineHeight":"29.75px","float":"none","color":"rgb(26, 26, 26)"},"images":[{"src":"https://05command-cn.wdfiles.com/local--files/staff%3Aimageuploadpage/SCP-173.jpg","naturalWidth":1200,"naturalHeight":981,"renderedWidth":300,"complete":true}],"tables":[],"blockquotes":0,"footnotes":0,"footnoteRefs":0,"headings":0,"tabSets":0,"textLength":868,"lightbox":{"visible":true,"hasImage":true}}</pre></body></html>
