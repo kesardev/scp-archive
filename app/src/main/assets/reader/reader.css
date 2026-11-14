@@ -392,6 +392,7 @@ body.reader-dark #page-content .scp-image-block .scp-image-caption {
 /* Interactive HTML blocks and page-level interactive notices. */
 .reader-interactive-block,
 .reader-interactive-notice {
+  display: block;
   margin: 1.2em 0 !important;
   padding: 14px 16px !important;
   border: 1px solid var(--reader-border);

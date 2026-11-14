@@ -266,7 +266,7 @@ object ReaderShellBuilder {
         fallbackUrl: String?,
         fallbackText: String?
     ): Element {
-        val card = Element("p").addClass("reader-interactive-block")
+        val card = Element("span").addClass("reader-interactive-block")
         card.appendElement("span").addClass("reader-interactive-title").text(titleText)
         card.appendElement("span").addClass("reader-interactive-desc").text(description)
         val actions = card.appendElement("span").addClass("reader-interactive-actions")
@@ -290,7 +290,7 @@ object ReaderShellBuilder {
     }
 
     private fun interactiveNotice(sourceUrl: String): Element {
-        val notice = Element("p").addClass("reader-interactive-notice")
+        val notice = Element("span").addClass("reader-interactive-notice")
         notice.appendText("此条目包含页面级互动元素，阅读器仅显示静态内容。")
         if (sourceUrl.isNotBlank()) {
             notice.appendText(" ")
