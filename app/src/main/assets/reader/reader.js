@@ -361,6 +361,17 @@
         return;
       }
       event.preventDefault();
+      if (link.hasAttribute('data-reader-external')) {
+        post('openExternal', { url: absolute.href });
+        return;
+      }
+      if (absolute.protocol === 'scparchive:') {
+        var interactive = absolute.searchParams.get('url') || '';
+        if (interactive) {
+          post('openInteractive', { url: interactive });
+        }
+        return;
+      }
       var host = absolute.hostname.toLowerCase();
       if (host === 'scp-wiki-cn.wikidot.com' || host === 'scp-wiki.wikidot.com') {
         post('openInternal', { path: absolute.pathname.replace(/^\//, '') + absolute.search });
