@@ -298,7 +298,7 @@ Installed and launched on HQ658W0041 (XQ_FE72, 1080x2340):
   visible, and after 4.2 seconds #pageo contained
   "检测到版本更新，请立即升级。 立即升级" with a working upgrade link.
 
-Device screenshots:
+Device screenshots and one Chrome-rendered interactive preview:
 
     preview/device-scp-173.png
     preview/device-scp-5000.png
