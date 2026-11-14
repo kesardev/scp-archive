@@ -11,8 +11,8 @@ android {
         applicationId = "cc.kesardev.scparchive"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "2.2-tabs-theme"
+        versionCode = 5
+        versionName = "2.3-interactive"
     }
 
     buildTypes {

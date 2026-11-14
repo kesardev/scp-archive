@@ -68,4 +68,9 @@
         android:title="@string/reload"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_open_browser"
+        android:title="在浏览器打开"
+        app:showAsAction="never" />
+
 </menu>

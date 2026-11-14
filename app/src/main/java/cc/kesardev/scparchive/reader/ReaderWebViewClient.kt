@@ -11,6 +11,7 @@ import android.webkit.WebViewClient
 class ReaderWebViewClient(
     private val onInternal: (String) -> Unit,
     private val onExternal: (String) -> Unit,
+    private val onInteractive: (String) -> Unit = {},
     private val pageFinished: (WebView, String) -> Unit = { _, _ -> }
 ) : WebViewClient() {
 
@@ -30,6 +31,15 @@ class ReaderWebViewClient(
 
     private fun handle(uri: Uri): Boolean {
         val scheme = uri.scheme?.lowercase()
+        if (scheme == "scparchive") {
+            if (uri.host == "interactive") {
+                val url = uri.getQueryParameter("url")
+                if (!url.isNullOrBlank()) {
+                    onInteractive(url)
+                }
+            }
+            return true
+        }
         if (scheme != "http" && scheme != "https") {
             return true
         }
@@ -37,6 +47,10 @@ class ReaderWebViewClient(
         if (host == "scp-wiki-cn.wikidot.com" || host == "scp-wiki.wikidot.com") {
             val path = uri.path?.trim('/') ?: return true
             if (path.isNotEmpty()) {
+                if (path.contains("/html/")) {
+                    onInteractive(uri.toString())
+                    return true
+                }
                 onInternal(path)
             }
             return true

@@ -54,7 +54,8 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
                         page.html,
                         ReaderShellBuilder.BASE_URL,
                         assets,
-                        theme
+                        theme,
+                        ReaderShellBuilder.BASE_URL + slug.trim('/')
                     )
                 }
             } catch (error: Exception) {
