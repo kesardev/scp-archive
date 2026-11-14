@@ -64,10 +64,19 @@
 - 深色模式对使用自定义内联配色的页面可能不完整。
 - 目录与中心页解析依赖 Wiki 当前页面结构，页面改版后可能需要更新解析规则。
 
+## 参考项目
+
+以下项目用于交互和实现思路参考：
+
+- [Anomicon](https://github.com/Suixin04/Anomicon)
+- [SCP-Flutter](https://github.com/JLeo0001/SCP-Flutter)
+- [SCP-Android](https://github.com/zhufree/SCP-Android)
+- [ScpReader](https://github.com/zsakvo/ScpReader)
+
 ## 许可与署名
 
-本仓库暂未声明应用代码的开源许可证。
+应用源代码采用 [MIT License](LICENSE)。
 
-SCP 相关文字、概念和部分视觉素材归各自创作者所有，依 Creative Commons Attribution-ShareAlike 3.0 使用。应用图标来自 Wikipedia 的 SCP_Foundation_(emblem).svg。
+SCP 相关文字、概念和部分视觉素材不适用 MIT，归各自创作者所有，依 Creative Commons Attribution-ShareAlike 3.0 使用。应用图标来自 Wikipedia 的 SCP_Foundation_(emblem).svg，遵循其原始许可。
 
 使用的开源组件包括 OkHttp、Jsoup、AndroidX 和 Material Components。
