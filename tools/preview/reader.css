@@ -388,3 +388,47 @@ body.reader-dark #page-content .title {
 body.reader-dark #page-content .scp-image-block .scp-image-caption {
   color: var(--reader-muted);
 }
+
+/* Interactive HTML blocks and page-level interactive notices. */
+.reader-interactive-block,
+.reader-interactive-notice {
+  margin: 1.2em 0 !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--reader-border);
+  border-left: 3px solid var(--reader-accent);
+  border-radius: 12px;
+  background: var(--reader-surface-2);
+  color: var(--reader-fg);
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.reader-interactive-title {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.reader-interactive-desc {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--reader-muted);
+}
+
+.reader-interactive-actions {
+  display: block;
+}
+
+.reader-interactive-action {
+  display: inline-block;
+  margin-right: 12px;
+  font-weight: 600;
+}
+
+body.reader-dark .reader-interactive-block,
+body.reader-dark .reader-interactive-notice {
+  border-color: var(--reader-border);
+  border-left-color: var(--reader-accent);
+  background: var(--reader-surface-2);
+  color: var(--reader-fg);
+}
