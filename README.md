@@ -5,12 +5,12 @@ HTML/CSS 与页面脚本行为所需的结构，并提供首页、目录、书�
 深色模式。
 
 - Package: cc.kesardev.scparchive
-- Version: 2.2-tabs-theme (versionCode 4)
+- Version: 2.3-interactive (versionCode 5)
 - Android: minSdk 24, targetSdk 35
 - Repository: https://github.com/kesardev/scp-archive
 
-Status: Phase 1 home page and Phase 2 bottom tabs/theme switch implemented,
-compiled with Gradle, unit-tested and validated on an Android device.
+Status: Phase 1 home page, Phase 2 bottom tabs/theme switch and Phase 3
+interactive-entry handling implemented, compiled with Gradle and unit-tested.
 
 The application id changed from cc.zsakvo.scpreader to
 cc.kesardev.scparchive. Android treats this as a new app, so data from an older
@@ -96,6 +96,30 @@ catalog, search and library remain separate screens.
   effective night mode.
 - The reader overflow menu adds 外观设置, which opens the Settings tab.
 
+## Interactive entries (Phase 3)
+
+The 互动性 tag was sampled across 22 articles. The structures are not uniform:
+most put the experience in an HTML block iframe, while others use page-level
+onclick/forms or external iframes. Wikidot chrome iframes (interwiki/style/
+credit) are noise and should not become reading content.
+
+- ReaderShellBuilder classifies iframes before replacing them:
+  - interwiki/style/credit/resize iframes are removed;
+  - HTML block iframes (html-block-iframe or a wiki /html/ path) become an
+    "互动式内容" card with 进入互动版 and 在浏览器打开;
+  - external content iframes become an "外部互动内容" card with 在浏览器打开;
+  - page-level onclick/forms get a static notice and 在浏览器打开原页.
+- The interactive card uses scparchive://interactive?url=... . reader.js posts
+  openInteractive, and MainActivity opens InteractiveActivity.
+- InteractiveActivity loads the block in an isolated WebView with JavaScript
+  and DOM storage enabled, no Reader bridge, no file/content access, cookies
+  off, and external hosts sent to the browser.
+- HtmlBlockPreparer removes the parent resize helper and injects a mobile
+  viewport; HtmlBlockRepository caches raw blocks for six hours.
+- scp-cn-963-j now shows the interactive card instead of a generic embed link.
+  Its HTML block starts with the "欢迎使用..." screen and advances to
+  "检测到版本更新，请立即升级" after three seconds.
+
 ## Validation result
 
 Chrome headless, 504 px viewport, real page CSS loaded:
@@ -149,7 +173,7 @@ inside later blocks stay valid instead of being ignored.
 Verified in this workspace with a temporary JDK 17 + Android SDK 35:
 
     assembleDebug      BUILD SUCCESSFUL
-    testDebugUnitTest  16 tests, 0 failures
+    testDebugUnitTest  21 tests, 0 failures
 
 APK:
 
@@ -267,6 +291,13 @@ Installed and launched on HQ658W0041 (XQ_FE72, 1080x2340):
 - Status-bar icons followed the effective theme: light icons in dark mode and
   dark icons in light mode.
 
+- Interactive-content unit tests cover HTML block detection, chrome iframe
+  removal, external embed cards, page-level notices and the HTML block
+  preparer.
+- Chrome headless executed the scp-cn-963-j HTML block: the initial screen was
+  visible, and after 4.2 seconds #pageo contained
+  "检测到版本更新，请立即升级。 立即升级" with a working upgrade link.
+
 Device screenshots:
 
     preview/device-scp-173.png
@@ -287,6 +318,7 @@ Device screenshots:
     preview/device-settings-light.png
     preview/device-reader-dark.png
     preview/device-3029-dark.png
+    preview/interactive-963.png
 
 ## Relationship to SCP-Flutter
 
@@ -357,6 +389,9 @@ The Gradle wrapper jar and scripts are included.
         reader/ReaderShellBuilder.kt
         reader/ReaderTheme.kt
         reader/ReaderWebViewClient.kt
+        reader/HtmlBlockPreparer.kt
+        reader/HtmlBlockRepository.kt
+        reader/InteractiveActivity.kt
         settings/AppearancePreferences.kt
         settings/SettingsActivity.kt
         settings/ThemeMode.kt
@@ -377,15 +412,18 @@ The Gradle wrapper jar and scripts are included.
         HomeParserTest.kt
         HomeSelectionTest.kt
         ThemeModeTest.kt
+        InteractiveContentTest.kt
       app/src/test/resources/pages/
       app/src/main/res/layout/
         activity_home.xml
         activity_settings.xml
+        activity_interactive.xml
         item_home_article.xml
         item_home_quick.xml
         item_home_recent.xml
       app/src/main/res/menu/
         menu_bottom.xml
+        menu_interactive.xml
       tools/preview/
         build_preview.py
         reader.css
@@ -405,6 +443,9 @@ The Gradle wrapper jar and scripts are included.
   history when selected.
 - Dark mode uses targeted CSS overrides rather than a full re-theme, so pages
   with custom inline colours may remain light in places.
+- HTML blocks have an interactive viewer but no static "正文回退" extraction
+  yet. Page-level JavaScript interactions in ordinary articles still show the
+  browser notice instead of running in the reader.
 - Comments and AI are app-level features and are outside this reader scope.
 - In-page find uses WebView's deprecated findAllAsync/findNext; it works, but
   there is no match counter yet.
@@ -417,5 +458,7 @@ The Gradle wrapper jar and scripts are included.
 1. Add search ranking and recent searches.
 2. Consider a single-activity tab shell if deeper cross-tab state sharing is
    needed.
-3. Consider a native block renderer for TTS and text-only mode.
-4. Add reading statistics or app-level comments if needed.
+3. Add a static body fallback for HTML block articles, so the text can be read
+   even when the interaction is skipped.
+4. Consider a native block renderer for TTS and text-only mode.
+5. Add reading statistics or app-level comments if needed.
