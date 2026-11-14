@@ -1,0 +1,636 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="html-block-html" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-type" content="text/html; charset=utf-8"/><link rel="stylesheet" href="/common--theme/base/css/html-block.css"/></head><body>
+<style type="text/css">
+    /*從SCP-3125複製過來的*/
+    body {
+        font-family: verdana, arial, helvetica, sans-serif;
+        font-size: 12.8px; /* 16px * 0.8 */
+        color: #333;
+        line-height: 141%;
+    }
+
+hr{
+width:90%
+}
+    .classified-info {
+        display: none;
+    }
+
+    blockquote {
+        border: 1px dashed #999;
+        padding: 0 12.8px;
+        background-color: #f4f4f4;
+    }
+
+    a {
+        color: #b01;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .collapsed {
+        display: none;
+    }
+
+    h4 {
+        font-size: 130%;
+        font-weight: bold;
+        margin-bottom: 0;
+    }
+
+ keycap {
+   /*從http://www.scp-wiki.net/component:theme複製過來的*/
+
+    border: 1px solid;
+    border-color: #ddd #bbb #bbb #ddd;
+    border-bottom-width: 2px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #f9f9f9;
+    padding: 1px 3px;
+    font-family: inherit;
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+
+table {
+  border: 1px solid #000000;  
+  border-collapse: collapse;  
+}  
+tr, td {  
+  padding:4px 10px;
+  border: 1px solid #000000;  
+}
+
+</style>
+
+<script>
+time1=30
+
+i=0
+moving1sw=0
+displaybox=new Array("■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
+
+displaybox2=new Array("■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■□","■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
+
+function adding0(str,strlength){
+var n=strlength-str.length
+while(n>0){
+str="0"+str
+n=n-1
+}
+return str;
+}
+
+function timecounting1(){
+var j=String(time1)
+if(time1>=0){
+document.getElementById("timer1").innerHTML=adding0(j,2)
+time1=time1-1
+setTimeout("timecounting1()",1000)
+}
+else{
+document.getElementById("page6").style="display:none"
+topage7()
+}
+
+}
+
+time2=30
+
+function timecounting2(){
+var j=String(time2)
+if(time2>=0){
+document.getElementById("timer2").innerHTML=adding0(j,2)
+time2=time2-1
+setTimeout("timecounting2()",1000)
+}
+else{
+topage13()
+}
+}
+
+time3=60
+function timecounting3(){
+var j=String(time3)
+if(time3>=0){
+document.getElementById("timer3").innerHTML=adding0(j,2)
+time3=time3-1
+setTimeout("timecounting3()",1000)
+}
+else{
+openrealcontent2()
+}
+}
+
+time4=90
+function timecounting4(){
+var j=String(time4)
+if(time4>=0){
+document.getElementById("timer4").innerHTML=adding0(j,2)
+time4=time4-1
+setTimeout("timecounting4()",1000)
+}
+else{
+toend4()
+}
+}
+
+ii=0
+
+function moving2(){
+if(ii<displaybox2.length){
+document.getElementById("progressbar2").innerHTML=displaybox2[ii]
+ii=ii+1
+setTimeout("moving2()",1000)
+}
+else{
+topage10()
+}
+}
+
+function moving1(){
+if(moving1sw==1){
+if(i<displaybox.length){
+
+document.getElementById("progressbar").innerHTML="<blockquote><p>正在下载升级包…</p><p><center>"+displaybox[i]+"</center></p></blockquote>"
+i=i+1
+setTimeout("moving1()",1000)
+}
+
+else{
+setTimeout("topage2()",500)
+}
+}
+}
+
+function startmoving1(){
+
+if (moving1sw==0){
+moving1sw=1
+moving1()
+document.getElementById("button1").style="cursor:default"
+}
+
+}
+function topage1(){
+document.getElementById("pageo").innerHTML='<blockquote><p><center>检测到版本更新，请立即升级。</center></p><blockquote><p><center><b><u id=button1 style="cursor:pointer" onclick="startmoving1()">立即升级</u></b></center></p></blockquote></blockquote><div id="progressbar"></div>'
+}
+
+function topage2(){
+document.getElementById("pageo").innerHTML='<blockquote><p>下载完成，正在安装更新…</p></blockquote>'
+setTimeout("topage2_5()",5000)
+setTimeout("topage3()",7000)
+
+return false
+}
+
+function topage2_5(){
+document.getElementById("pageo").innerHTML=""
+document.getElementById("pagep").innerHTML=""
+return false
+
+}
+
+function topage3(){
+document.getElementById("pageo").innerHTML='<blockquote><p><center>安装成功</center></p><p><center>正在重新启动…</center></p></blockquote>'
+setTimeout("topage2_5()",3000)
+setTimeout("totitle1()",5000)
+}
+
+function totitle1(){
+document.getElementById("title1").innerHTML='<blockquote><p><hr></p><center><b><p style="font-size:14px">欢迎使用 SCP基金会内部资料查询系统 v.9.6.3</p></b></center><p><hr></p></blockquote>'
+setTimeout("topage5()",1000)
+}
+
+function topage5(){
+document.getElementById("page5").style=""
+setTimeout("topage6()",3000)
+}
+
+function topage6(){
+document.getElementById("page5").style="display:none"
+setTimeout('document.getElementById("page6").style=""',1500)
+setTimeout('timecounting1()',1510)
+}
+
+function topage7(){
+document.getElementById("page7").style=""
+setTimeout("topage8()",1000)
+}
+
+function topage8(){
+document.getElementById("page7").innerHTML=""
+
+document.getElementById("page8").style=""
+
+}
+
+function topage9(){
+document.getElementById("title1").innerHTML=""
+document.getElementById("page8").innerHTML=""
+
+document.getElementById("page9").style=""
+
+moving2()
+}
+
+function topage10(){
+document.getElementById("page9").innerHTML=""
+
+setTimeout('document.getElementById("page10").style=""',1500)
+setTimeout('topage11()',4500)
+
+}
+
+function topage11(){
+document.getElementById("page10").innerHTML=""
+
+setTimeout('document.getElementById("page11").style=""',1500)
+
+}
+function topage12(){
+document.getElementById("page11").innerHTML=""
+
+setTimeout('document.getElementById("page12").style=""',1500)
+setTimeout('timecounting2()',1500)
+
+}
+function topage13(){
+document.getElementById("page12").innerHTML=""
+
+setTimeout('document.getElementById("page13").style=""',1500)
+setTimeout('openrealcontent1()',38500)
+}
+
+function openrealcontent1(){
+document.getElementById("opening").innerHTML="打开成功！用时:37s"
+document.getElementById("realcontent").style=""
+timecounting3()
+}
+
+function openrealcontent2(){
+document.getElementById("ads").style="display:none"
+document.getElementById("adend").style=""
+document.getElementById("realcontent2").style=""
+setTimeout("toend1()",1500)
+}
+
+function toend1(){
+document.getElementById("end1").style=""
+}
+
+function toend2(){
+document.getElementById("end2").style=""
+}
+
+function toend3(){
+document.getElementById("end1").style="display:none"
+document.getElementById("end2").style="display:none"
+document.getElementById("end3").style=""
+timecounting4()
+
+}
+
+function toend4(){
+document.getElementById("end3").style="display:none"
+document.getElementById("page13").style="display:none"
+document.getElementById("end4").style=""
+setTimeout('document.getElementById("end4").style="display:none"',1500)
+setTimeout('toend5()',4500)
+}
+
+function toend5(){
+document.getElementById("end5").style=""
+}
+
+</script>
+
+<div id="pagep">
+<blockquote>
+<p><hr></p>
+<center><b><p style="font-size:14px">欢迎使用 SCP基金会内部资料查询系统 v.1.8.4</p></b></center>
+<p><hr></p>
+</blockquote>
+</div>
+<div id="pageo">
+
+</div>
+
+<script>
+setTimeout("topage1()",3000)
+</script>
+
+<div id="title1"></div>
+
+<div id="page5" style="display:none">
+<blockquote>
+<p>
+<center>启动中…请稍候…</center>
+</p>
+</blockquote>
+</div>
+
+<div id="page6" style="display:none">
+<blockquote>
+<p>
+<center>即将进入登陆界面，请稍候…　　　　　距离广告结束还有<b id="timer1">30</b>秒|<div style="display:inline">VIP用户免广告</div></center>
+</p>
+<center><p style="color:red;cursor:pointer"><u>D级人员也能爆神装！尽在《SCP冒险之旅》>查看详情></u></p></center>
+</blockquote>
+</div>
+
+<div style="display:none" id="page7">
+<blockquote>
+<p>
+<center> 广告播放结束！正在进入登陆界面...</center>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page8">
+<blockquote>
+<p>
+<center>登陆界面</center>
+</p>
+<p>
+<hr>
+</p>
+<p>
+　　　　用户名：<u>5780072Hortus-730514</u>
+</p>
+<p>
+<hr>
+</p>
+<p>
+　　　　密码：<u>*************</u>
+</p>
+<p>
+<hr>
+</p>
+<p>
+<center><keycap>X</keycap>下次自动登陆
+</p>
+<p>
+<table style="cursor:pointer" id="loginbt" onclick="topage9()">
+<tr><td>登陆</td></tr>
+</center>
+</table>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page9">
+<blockquote>
+<p>
+<center>正在登陆…
+<div id="progressbar2">
+</div>
+</center>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page10">
+<blockquote>
+<p>
+<center>登陆成功！正在跳转…</center>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page11">
+<blockquote>
+<p>
+<hr>
+</p>
+<p>
+<center><b style="font-size:14px">SCP基金会内部资料查询系统 v.9.6.3</b></center>
+</p>
+<p>
+<hr>
+</p>
+<p>
+<center>你好，研究员 霍 先生,您的权限等级为：<b>3</b>|设置|皮肤|4月21日 ☼ 23°C 晴 星期二</center>
+</p>
+<p>
+<hr>
+</p>
+<center>
+<p>
+<table border="1" style="color:red; cursor:pointer;text-decoration:underline">
+
+<tr><td>震惊！13年前的一次收容失效竟是因为…</td><td>基金会搞笑动图第17期:蠢萌的博士们</td></tr>
+<tr><td>基金会标准战刀的5个妙用</td><td>专访O5-7:你不知道的O5日常</td></tr>
+<tr><td>两个Safe级SCP相遇，结果惊了！</td><td>Site-CN-78七大特工排名:他只排第三！</td></tr>
+</table>
+</p>
+</center>
+<p>
+<hr>
+</p>
+<p>
+<center>请输入您要查询的项目：<b><u>SCP-CN-963-J</u></b></center>
+</p>
+<p>
+<center>
+<table border="1" style="cursor:pointer" onclick="topage12()">
+<tr><td><u><b>点击查询</b></u></td></tr>
+</table>
+</center>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page12">
+<blockquote>
+<p>
+<center>
+即将打开 页面：<b>SCP-CN-963-J</b>，请稍候…　　距离广告结束还有<b id=timer2>30</b>秒|<div style="display:inline">VIP用户免广告</div>
+</center>
+</p>
+<p>
+<center style="color:red;cursor:pointer;text-decoration:underline">
+闺蜜玩了两天，从O5变成D级人员，蠢哭了！《模拟基金会》>查看详情>
+</center>
+</p>
+</blockquote>
+</div>
+
+<div style="display:none" id="page13">
+<blockquote>
+<center>
+<p>
+广告播放结束！
+</p>
+<p id="opening">
+正在打开…
+</p>
+</center>
+<p>
+<hr>
+</p>
+<div id="realcontent" style="display:none">
+<div>
+
+<p><b>项目编号：</b>SCP-CN-963-J</p>
+
+<p><b>项目等级：</b>Keter</p>
+
+<p><b>特殊收容措施：</b>运行于SCP-CN-1018超级计算机组的基金会爬虫软件“网络清洁工”负责抓取网络中的流动数据以检测SCP-CN-963-J并使用SCP-CN-963-J反制程序将其破坏，机组应内置SCP-CN-963-J反制程序。禁止任何计算机与SCP-CN-1018机组建立数据连接。</p>
+
+<p>目前基金会保存的一（1）份SCP-CN-963-J被存储于一个3.5寸硬盘中，该硬盘被保存在Site-CN-78的一个标准加密保险箱内。禁止任何人员调用该份SCP-CN-963-J。多个无害的SCP-CN-963-J片段被分别存储于多个不同的3.5寸硬盘中，调用这些片段需要经过4级权限人员许可。同时被调用的片段不能多于5个。</p>
+
+<p>潜伏在中国各大软件公司的基金会特工负责在软件中植入SCP-CN-963-J反制程序以遏制SCP-CN-963-J的扩散。</p>
+
+<p>任何确认存储有SCP-CN-963-J的计算机应立即安装并运行SCP-CN-963-J反制程序。</p>
+
+<p><b>描述：</b>SCP-CN-963-J是一段由未知语言编写的异常代码，总长247060字节。有编程基础的人员容易理解项目，但多数情况下会认为项目“毫无意义”“有明显错误”。项目的不完整片段不具有异常效应。</p>
+
+<p>SCP-CN-963-J表现出具有远超其代码体现出的行为能力。项目会且仅会感染位于中国境内具有图形界面的计算机，被感染的计算机无论是否安装有网卡都会被强制与广域互联网进行连接，推测SCP-CN-963-J能够使计算机中部分元器件发挥网卡的功能。这导致该计算机与网络的连接十分不稳定且速率缓慢：观察到的最大连接速率约为480Kbps。</p>
+
+<p>SCP-CN-963-J有能力将自己存储于任意可接触的存储媒介中，包括容量小于其大小的存储媒介。且项目能够将自己包含在数据流内，因此在基金会发现项目时项目已感染中国境内██%的家用计算机和█%的网络服务器。在SCP-CN-963-J反制程序被编写前项目对单个计算机的影响只能通过清除其所有数据消除。</p>
+
+<p>当一台计算机感染SCP-CN-963-J时，这台计算机上的所有应用程序会提示需要更新并自行完成更新，所有更新完成的程序版本号都会变为“9.6.3”。SCP-CN-963-J不会影响程序的原本功能，但会为程序
+</p>
+<blockquote id=ads>
+<center>
+<p>
+连续阅读了这么久，休息一下吧！　距离广告结束还有<b id="timer3">60</b>秒|VIP用户免广告
+</p>
+<p style="color:red;cursor:pointer;text-decoration:underline">
+给你一个Site，你能避免收容失效吗？《我在基金会当主管》>查看详情>
+</p>
+</center>
+</blockquote>
+<blockquote id=adend style="display:none">
+<center>
+<p>
+广告播放结束！继续为您显示页面：SCP-CN-963-J
+</p>
+</center>
+</blockquote>
+<div id="realcontent2" style="display:none">
+<p>添加大量无意义的界面和功能，并在程序界面内显示大量广告链接，链接形式与SCP-CN-066类似，内容与该程序内容有关。所有链接都指向了██软件公司的官方网站。经调查，该软件公司无异常且无人对项目知情。</p>
+
+<p>SCP-CN-963-J最初被发现于██软件公司发行的《████》软件中，该软件公司在软件发行后一周内受到█████起投诉并引起了基金会注意，随后项目被收容，但由于对项目异常性质的不了解导致Site-CN-██内超过████台计算机受到项目的感染。所有受感染计算机已被清除所有数据。</p>
+
+<p><b>附录：</b>于██/██/20██，赵██博士在对SCP-CN-963-J片段研究后发现，项目看似无意义的代码本身是经过特殊加密后的结果。此后赵██博士成功对项目进行破译，并编写了能够将项目破坏至无异常的SCP-CN-963-J反制程序。赵██博士因其贡献受到基金会的表彰。</p>
+</div>
+<p>
+<hr>
+</p>
+</div>
+</div>
+</blockquote>
+</div>
+
+<div id="end1" style="display:none">
+<blockquote>
+<p>
+<center>
+页面：<b>SCP-CN-963-J</b> 显示完毕！
+
+</p>
+<p>
+<hr>
+</p>
+<p>
+
+猜你喜欢：
+
+</p>
+
+<table style="color:red;cursor:pointer;text-decoration:underline">
+<tr><td>SCP-CN-360-J</td><td>SCP-CN-1100-J</td></tr>
+<tr><td>SCP-CN-9706-J</td><td>SCP-CN-9811-J</td></tr>
+</table>
+
+<p>
+<hr>
+</p>
+
+<p>
+<table>
+<tr><td>返回主界面</td><td><b onclick="toend2()" style="cursor:pointer">退出</b></td></tr>
+</table>
+</p>
+</center>
+</blockquote>
+</div>
+
+<div id="end2" style="display:none">
+<blockquote>
+<center>
+<p>
+您真的要退出 SCP基金会内部资料查询系统 v.9.6.3 吗？
+</p>
+<p>
+<hr>
+</p>
+<p>
+<table>
+<tr><td>最小化到托盘</td><td><b onclick="toend3()" style="cursor:pointer"><u>退出</u></b></td></tr>
+</table>
+</p>
+<p>
+<keycap>√</keycap>不再提醒我
+</p>
+</center>
+</blockquote>
+</div>
+
+<div id="end3" style="display:none">
+<blockquote>
+<center>
+<p>
+正在退出，请稍候　　　　　　　　距离广告结束还有<b id="timer4">90</b>秒|VIP用户免广告
+</p>
+<p style="color:red;text-decoration:underline;cursor:pointer">
+开局一把刀，你能活过月末处决吗？《基金会：我是D级》>查看详情>
+</p>
+</center>
+</blockquote>
+</div>
+
+<div id="end4" style="display:none">
+<blockquote>
+<p>
+<center>
+退出成功！
+</center>
+</p>
+</blockquote>
+</div>
+
+<div id="end5" style="display:none">
+<center>
+<blockquote>
+<p>
+<hr>
+</p>
+<p>
+<b style="font-size:14px">SCP-CN-963-J反制程序 编写者：赵 博士</b>
+</p>
+<p>
+<hr>
+</p>
+</blockquote>
+<blockquote>
+<p>
+检测到版本更新，请立即升级。
+</p>
+<blockquote>
+<p>
+立即升级
+</p>
+</blockquote>
+</blockquote>
+</center>
+</div>
+<script type="text/javascript" src="/common--javascript/html-block-iframe.js"></script></body></html>
